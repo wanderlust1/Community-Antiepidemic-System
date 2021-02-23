@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system
+package com.wanderlust.community_antiepidemic_system.utils
 
 import android.text.TextUtils
 import com.baidu.location.BDLocation
@@ -164,4 +164,29 @@ object MapUtils {
         }
         return if (simpleDateFormat == null) "NULL" else simpleDateFormat!!.format(time)
     }
+
+    fun formatLocType(type: Int): String {
+        when (type) {
+            BDLocation.TypeGpsLocation -> { // GPS定位结果
+                return "GPS定位成功"
+            }
+            BDLocation.TypeNetWorkLocation -> { // 网络定位结果
+                return "网络定位成功"
+            }
+            BDLocation.TypeOffLineLocation -> { // 离线定位结果
+                return "离线定位成功"
+            }
+            BDLocation.TypeServerError -> {
+                return "服务端网络定位失败"
+            }
+            BDLocation.TypeNetWorkException -> {
+                return "定位失败，请检查网络是否通畅"
+            }
+            BDLocation.TypeCriteriaException -> {
+                return "定位失败，请检查手机定位服务或重启手机"
+            }
+        }
+        return ""
+    }
+
 }

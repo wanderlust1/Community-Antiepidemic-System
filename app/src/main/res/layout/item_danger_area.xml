@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_item_danger_area_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="5dp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_item_danger_area_point"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:textColor="@color/white"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="2dp"
+            android:src="@drawable/ic_baseline_arrow_right_24"/>
+
+        <TextView
+            android:id="@+id/tv_item_danger_area_city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:layout_toRightOf="@id/iv_item_danger_area_point"/>
+
+        <TextView
+            android:id="@+id/tv_item_danger_area_community"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/iv_item_danger_area_point"
+            android:layout_below="@id/tv_item_danger_area_city_name"
+            android:textColor="#BEFFFFFF"
+            android:textSize="12sp"/>
+    </RelativeLayout>
+
+</LinearLayout>

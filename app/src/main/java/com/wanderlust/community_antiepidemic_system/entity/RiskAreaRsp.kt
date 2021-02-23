@@ -1,12 +1,13 @@
 package com.wanderlust.community_antiepidemic_system.entity
 
+import com.baidu.mapapi.model.LatLng
 import com.google.gson.annotations.SerializedName
 
 data class RiskAreaRsp (
 
     val data: RiskAreaData,
 
-    val code: Int = 1,
+    val code: String = "",
 
     val msg: String = ""
 
@@ -28,12 +29,16 @@ data class RiskAreaData (
 
 data class Area (
 
-    val province: String = "",
+    var province: String = "",
 
-    val city: String = "",
+    var city: String = "",
 
-    val county: String = "",
+    var county: String = "",
 
-    val communitys: MutableList<String> = mutableListOf()
+    var communitys: MutableList<String> = mutableListOf(),
+
+    var isHigh: Boolean = false, //true为高风险地区，false为低风险地区
+
+    var position: LatLng? = null //中心位置坐标
 
 )
