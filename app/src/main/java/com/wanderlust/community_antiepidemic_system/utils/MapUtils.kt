@@ -1,6 +1,10 @@
 package com.wanderlust.community_antiepidemic_system.utils
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.text.TextUtils
+import androidx.annotation.DrawableRes
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
 import com.baidu.location.Poi
@@ -187,6 +191,17 @@ object MapUtils {
             }
         }
         return ""
+    }
+
+    fun drawBitmapFromVector(context: Context, @DrawableRes vectorResId: Int): Bitmap? {
+        val vectorDrawable = context.getDrawable(vectorResId) ?: return null
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
+        vectorDrawable.draw(canvas)
+        return bitmap
     }
 
 }

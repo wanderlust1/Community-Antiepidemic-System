@@ -8,12 +8,10 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
@@ -31,9 +29,8 @@ import com.baidu.mapapi.search.poi.*
 import com.baidu.mapapi.utils.SpatialRelationUtil
 import com.wanderlust.community_antiepidemic_system.entity.Area
 import com.wanderlust.community_antiepidemic_system.entity.RiskAreaReq
-import com.wanderlust.community_antiepidemic_system.utils.DensityUtils
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
-import com.wanderlust.community_antiepidemic_system.widget.DangerAreaListView
+import com.wanderlust.community_antiepidemic_system.widget.DangerAreaView
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -44,17 +41,11 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
 
-class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, View.OnClickListener, CoroutineScope {
+class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, CoroutineScope {
 
     private lateinit var mBaiduMap: BaiduMap
     private lateinit var mMapView: MapView
-    private lateinit var mTopLayout: CardView
-    private lateinit var mTopText: TextView
-    private lateinit var mTopImage: ImageView
-    private lateinit var mDangerListView: DangerAreaListView
-    private lateinit var mDangerTips: TextView
-    private lateinit var mDataUpdateDate: TextView
-    private lateinit var mDataUpdateDiv: View
+    private lateinit var mDangerAreaView: DangerAreaView
 
     //定位
     private var mLocClientOne: LocationClient? = null
@@ -92,18 +83,54 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, View.OnCl
 
     private fun initView() {
         mMapView = findViewById(R.id.map_view)
-        mTopLayout = findViewById(R.id.ll_map_top)
-        mTopImage = findViewById(R.id.iv_map_top)
-        mTopText = findViewById(R.id.tv_map_top)
-        mDangerTips = findViewById(R.id.tv_map_top_danger_tips)
-        mDangerListView = findViewById(R.id.list_map_top_detail)
-        mDataUpdateDate = findViewById(R.id.tv_danger_area_footer)
-        mDataUpdateDiv = findViewById(R.id.tv_danger_area_footer_div)
-        mTopLayout.setOnClickListener(this)
+        mDangerAreaView = findViewById(R.id.dav_map_top)
         mBaiduMap = mMapView.map
         mBaiduMap.setViewPadding(30, 0, 30, 20)
     }
 
+    //启动单次定位
+    private fun startOneLocation() {
+        mLocClientOne = LocationClient(this)
+        mLocClientOne!!.registerLocationListener(oneLocationListener)
+        val locationClientOption = LocationClientOption()
+        locationClientOption.locationMode = LocationClientOption.LocationMode.Hight_Accuracy
+        locationClientOption.setCoorType("bd09ll")
+        locationClientOption.setScanSpan(0)
+        locationClientOption.setOnceLocation(true)
+        locationClientOption.isOpenGps = true
+        locationClientOption.setIsNeedAddress(true)
+        mLocClientOne!!.locOption = locationClientOption
+        mLocClientOne!!.start()
+    }
+
+    //单次定位回调监听
+    private val oneLocationListener: BDAbstractLocationListener = object : BDAbstractLocationListener() {
+        override fun onReceiveLocation(location: BDLocation?) {
+            if (null == location) return
+            val latLng = LatLng(location.latitude, location.longitude)
+            mOneLocMarker?.remove()
+            val markerOptions = MarkerOptions()
+            markerOptions.position(latLng)
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(
+                MapUtils.drawBitmapFromVector(this@MapActivity, R.drawable.ic_baseline_location_on_24_blue)))
+            markerOptions.zIndex(9)
+            mOneLocMarker = mBaiduMap.addOverlay(markerOptions) as Marker
+            val builder = LatLngBounds.Builder().include(latLng)
+            val mapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(builder.build(), 0, 0, 0, 600)
+            // 更新地图状态
+            mBaiduMap.animateMapStatus(mapStatusUpdate)
+            isLocated = location.locType == BDLocation.TypeGpsLocation ||
+                    location.locType == BDLocation.TypeNetWorkLocation ||
+                    location.locType == BDLocation.TypeOffLineLocation
+            judgementDangerZone()
+            Toast.makeText(this@MapActivity, MapUtils.formatLocType(location.locType), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    //停止单次定位
+    private fun stopOneLocation() = mLocClientOne?.stop()
+
+    //调用卫健委的接口并处理返回
     private fun startNetworkRequest() {
         mJob = Job()
         launch {
@@ -145,80 +172,37 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, View.OnCl
             val result = response.body()!!
             mTotalAreaCount = result.data.highCount + result.data.midCount
             isStartSearch = true
-            /*mDangerListView.setData(result.data.highList, result.data.midList) { area ->
+            mDangerAreaView.setData(result.data.highList, result.data.midList) { area ->
                 //将地图移动至该风险地区
                 val builder = LatLngBounds.Builder().include(area.position)
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(builder.build(), 0, 600, 0, 0))
             }
-            mDangerListView.setDateText(result.data.time)
+            mDangerAreaView.updateFooter("数据来源：卫生健康委（${result.data.time}）")
             if (mTotalAreaCount <= 0) {
                 judgementDangerZone()
             } else {
-                for (area in result.data.highList) {
-                    val districtSearch = DistrictSearch.newInstance()
-                    mDistrictSearchList.add(districtSearch)
-                    districtSearch.setOnDistrictSearchListener {
-                        area.isHigh = true
-                        onSearchResult(it, area)
-                    }
-                    districtSearch.searchDistrict(DistrictSearchOption().cityName(area.city).districtName(area.county))
+                result.data.highList.forEach {
+                    startSearchDistrict(it, true)
                 }
-                for (area in result.data.midList) {
-                    val districtSearch = DistrictSearch.newInstance()
-                    mDistrictSearchList.add(districtSearch)
-                    districtSearch.setOnDistrictSearchListener {
-                        area.isHigh = false
-                        onSearchResult(it, area)
-                    }
-                    districtSearch.searchDistrict(DistrictSearchOption().cityName(area.city).districtName(area.county))
-                }
-            }*/
-            val list1 = listOf<Area>(
-                Area("广东省", "广州市", "番禺区", mutableListOf(
-                    "大学城", "广州南站", "番禺广场", "大学城", "广州南站", "番禺广场")),
-                Area("广东省", "梅州市", "兴宁市", mutableListOf(
-                    "兴田街道", "宁中镇", "新陂镇", "罗岗镇")),
-                Area("四川省", "成都市", "武侯区", mutableListOf(
-                    "太平园", "九兴大道", "城通路", "高朋大道"))
-            )
-            val list2 = listOf<Area>(
-                Area("广东省", "深圳市", "龙华区", mutableListOf(
-                    "长湖", "坂田站", "万科城")),
-                Area("山东省", "济南市", "济阳区", mutableListOf(
-                    "黄河街道", "曲堤街道", "回河街道"))
-            )
-            mDangerListView.setData(list1, list2) { area ->
-                //将地图移动至该风险地区
-                val builder = LatLngBounds.Builder().include(area.position)
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(builder.build(), 0, 600, 0, 0))
-            }
-            mDataUpdateDate.text = "数据来源：卫生健康委（${result.data.time}）"
-            mTotalAreaCount = list1.size + list2.size
-            if (mTotalAreaCount <= 0) {
-                judgementDangerZone()
-            } else {
-                for (area in list1) {
-                    val districtSearch = DistrictSearch.newInstance()
-                    mDistrictSearchList.add(districtSearch)
-                    districtSearch.setOnDistrictSearchListener {
-                        area.isHigh = true
-                        onSearchResult(it, area)
-                    }
-                    districtSearch.searchDistrict(DistrictSearchOption().cityName(area.city).districtName(area.county))
-                }
-                for (area in list2) {
-                    val districtSearch = DistrictSearch.newInstance()
-                    mDistrictSearchList.add(districtSearch)
-                    districtSearch.setOnDistrictSearchListener {
-                        area.isHigh = false
-                        onSearchResult(it, area)
-                    }
-                    districtSearch.searchDistrict(DistrictSearchOption().cityName(area.city).districtName(area.county))
+                result.data.midList.forEach {
+                    startSearchDistrict(it, false)
                 }
             }
         }
     }
 
+    //开始区域检索
+    private fun startSearchDistrict(area: Area, isHigh: Boolean) {
+        val districtSearch = DistrictSearch.newInstance()
+        mDistrictSearchList.add(districtSearch)
+        districtSearch.setOnDistrictSearchListener {
+            area.isHigh = isHigh
+            onSearchResult(it, area)
+        }
+        districtSearch.searchDistrict(DistrictSearchOption().cityName(area.city).districtName(area.county))
+    }
+
+    //地区检索结果
     private fun onSearchResult(result: DistrictResult?, area: Area) {
         mCurrSearchedArea++
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
@@ -255,7 +239,8 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, View.OnCl
         if (poiInfos.isEmpty()) return
         val poiInfo = poiInfos.iterator().next()
         val markerOptions = MarkerOptions().position(poiInfo.getLocation()).icon(
-            BitmapDescriptorFactory.fromBitmap(drawBitmapFromVector(R.drawable.ic_baseline_location_on_24_red)))
+            BitmapDescriptorFactory.fromBitmap(MapUtils.drawBitmapFromVector(
+                this@MapActivity, R.drawable.ic_baseline_location_on_24_red)))
         val textView = TextView(this)
         textView.textSize = 12f
         textView.text = poiInfo.getName()
@@ -275,54 +260,6 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, View.OnCl
     override fun onGetPoiDetailResult(result: PoiDetailSearchResult?) {
     }
 
-    //启动单次定位
-    private fun startOneLocation() {
-        mLocClientOne = LocationClient(this)
-        mLocClientOne!!.registerLocationListener(oneLocationListener)
-        val locationClientOption = LocationClientOption()
-        locationClientOption.locationMode = LocationClientOption.LocationMode.Hight_Accuracy
-        locationClientOption.setCoorType("bd09ll")
-        locationClientOption.setScanSpan(0)
-        locationClientOption.setOnceLocation(true)
-        locationClientOption.isOpenGps = true
-        locationClientOption.setIsNeedAddress(true)
-        mLocClientOne!!.locOption = locationClientOption
-        mLocClientOne!!.start()
-    }
-
-    //单次定位回调监听
-    private val oneLocationListener: BDAbstractLocationListener = object : BDAbstractLocationListener() {
-        override fun onReceiveLocation(location: BDLocation?) {
-            if (null == location) return
-            val latLng = LatLng(location.latitude, location.longitude)
-            if (null != mOneLocMarker) {
-                mOneLocMarker?.remove()
-            }
-            val markerOptions = MarkerOptions()
-            markerOptions.position(latLng)
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(
-                drawBitmapFromVector(R.drawable.ic_baseline_location_on_24_blue)))
-            markerOptions.zIndex(9)
-            mOneLocMarker = mBaiduMap.addOverlay(markerOptions) as Marker
-            val builder = LatLngBounds.Builder().include(latLng)
-            val mapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(builder.build(), 0, 0, 0, 600)
-            // 更新地图状态
-            mBaiduMap.animateMapStatus(mapStatusUpdate)
-            isLocated = location.locType == BDLocation.TypeGpsLocation ||
-                    location.locType == BDLocation.TypeNetWorkLocation ||
-                    location.locType == BDLocation.TypeOffLineLocation
-            judgementDangerZone()
-            Toast.makeText(this@MapActivity, MapUtils.formatLocType(location.locType), Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    //停止单次定位
-    private fun stopOneLocation() {
-        if (null != mLocClientOne) {
-            mLocClientOne!!.stop()
-        }
-    }
-
     //判断当前定位是否在中高风险地区，并更新顶部提示
     private fun judgementDangerZone() {
         if (!isLocated || !isStartSearch || mCurrSearchedArea < mTotalAreaCount) {
@@ -334,7 +271,8 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, View.OnCl
                 break
             }
         }
-        updateTopTips()
+        mDangerAreaView.visibility = View.VISIBLE
+        mDangerAreaView.updateTopTips(isInDangerZone)
     }
 
     // 判断点是否在多边形内
@@ -345,57 +283,6 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, View.OnCl
             }
         }
         return false
-    }
-
-    private fun updateTopTips() {
-        mTopLayout.visibility = View.VISIBLE
-        mTopLayout.background = ContextCompat.getDrawable(this, if (isInDangerZone)
-            R.drawable.bg_map_tips_red else R.drawable.bg_map_tips_green)
-        mTopText.text = if (isInDangerZone) "当前位置处于中高风险地区中" else "当前位置位于中高风险地区之外"
-        mDangerTips.visibility = if (isInDangerZone) View.VISIBLE else View.GONE
-        mTopImage.setImageResource(if (isInDangerZone)
-            R.drawable.ic_baseline_priority_high_24 else R.drawable.ic_baseline_done_24)
-    }
-
-    private fun drawBitmapFromVector(@DrawableRes vectorResId: Int): Bitmap? {
-        val vectorDrawable = getDrawable(vectorResId) ?: return null
-        val bitmap = Bitmap.createBitmap(
-                vectorDrawable.intrinsicWidth,
-                vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
-        vectorDrawable.draw(canvas)
-        return bitmap
-    }
-
-    override fun onClick(v: View?) {
-        mDataUpdateDiv.visibility = if (mDangerListView.visibility == View.GONE) View.VISIBLE else View.GONE
-        mDataUpdateDate.visibility = if (mDangerListView.visibility == View.GONE) View.VISIBLE else View.GONE
-        mDangerListView.visibility = if (mDangerListView.visibility == View.GONE) View.VISIBLE else View.GONE
-    }
-
-    override fun onResume() {
-        super.onResume()
-        //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-        mMapView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        mMapView.onPause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
-        mMapView.onDestroy()
-        stopOneLocation()
-        mJob.cancel()
-        mPoiSearch.destroy()
-        mDistrictSearchList.forEach {
-            it.destroy()
-        }
     }
 
     //Android6.0之后需要动态申请权限
@@ -413,13 +300,23 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, View.OnCl
             for (perm in permissions) {
                 if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm)) {
                     permissionsList.add(perm)
-                    // 进入到这里代表没有权限.
                 }
             }
             if (permissionsList.isNotEmpty()) {
                 val strings = arrayOfNulls<String>(permissionsList.size)
                 requestPermissions(permissionsList.toArray(strings), 0)
             }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mMapView.onDestroy()
+        stopOneLocation()
+        mJob.cancel()
+        mPoiSearch.destroy()
+        mDistrictSearchList.forEach {
+            it.destroy()
         }
     }
 
