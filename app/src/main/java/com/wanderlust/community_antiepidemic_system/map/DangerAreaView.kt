@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.widget
+package com.wanderlust.community_antiepidemic_system.map
 
 import android.content.Context
 import android.graphics.Rect
@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

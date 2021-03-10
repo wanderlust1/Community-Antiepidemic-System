@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.CommunityAntiepidemicSystem" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.CommunityAntiepidemicSystem" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -14,7 +14,16 @@
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
-        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.WhiteStatusText" parent="Theme.CommunityAntiepidemicSystem">
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="LoginEditText" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">#E0E0E0</item>
+        <item name="colorControlActivated">#F5F5F5</item>
+        <item name="android:textColor">#F5F5F5</item>
     </style>
 
 </resources>

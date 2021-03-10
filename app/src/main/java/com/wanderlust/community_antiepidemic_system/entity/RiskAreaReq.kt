@@ -26,25 +26,17 @@ data class RiskAreaReq (
 ) {
 
     companion object {
-
         const val STATE_COUNCIL_SIGNATURE_KEY = "fTN2pfuisxTavbTuYVSsNJHetwq5bJvCQkjjtiLM2dCratiA"
-
         const val STATE_COUNCIL_X_WIF_NONCE = "QkjjtiLM2dCratiA"
-
         const val STATE_COUNCIL_X_WIF_PAASID = "smt-application"
-
         //国务院疫情防控查询 appId
         const val STATE_COUNCIL_APP_ID = "NcApplication"
-
         //国务院疫情防控查询 PASSID
         const val STATE_COUNCIL_PASSID = "zdww"
-
         //国务院疫情防控查询 秘钥
         const val STATE_COUNCIL_NONCE = "123456789abcdefg"
-
         //国务院疫情防控查询 token
         const val STATE_COUNCIL_TOEKN = "23y0ufFl5YxIyGrI8hWRUZmKkvtSjLQA"
-
         //国务院疫情防控查询 key
         const val STATE_COUNCIL_KEY = "3C502C97ABDA40D0A60FBEE50FAAD1DA"
 
@@ -74,7 +66,6 @@ data class RiskAreaReq (
             }
             return encodeStr
         }
-
     }
 
     init {

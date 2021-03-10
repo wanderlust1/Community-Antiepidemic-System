@@ -3,11 +3,11 @@ package com.wanderlust.community_antiepidemic_system
 import com.wanderlust.community_antiepidemic_system.entity.AntiepidemicRsp
 import com.wanderlust.community_antiepidemic_system.entity.RiskAreaReq
 import com.wanderlust.community_antiepidemic_system.entity.RiskAreaRsp
+import com.wanderlust.community_antiepidemic_system.entity.User
+import okhttp3.Response
+import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface ApiService {
 
@@ -26,5 +26,8 @@ interface ApiService {
     )
     @GET("/ncov/cityDiseaseInfoWithTrend")
     fun getAntiepidemicData() : Call<AntiepidemicRsp>
+
+    @GET("getUser")
+    fun getUserData(@Query("id") id: String, @Query("pw") password: String): Call<User>
 
 }

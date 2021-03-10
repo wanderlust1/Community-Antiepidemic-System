@@ -1,22 +1,15 @@
-package com.wanderlust.community_antiepidemic_system
+package com.wanderlust.community_antiepidemic_system.map
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
-import com.baidu.location.LocationClientOption
 import com.baidu.mapapi.map.*
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.model.LatLngBounds
@@ -27,10 +20,11 @@ import com.baidu.mapapi.search.district.DistrictSearch
 import com.baidu.mapapi.search.district.DistrictSearchOption
 import com.baidu.mapapi.search.poi.*
 import com.baidu.mapapi.utils.SpatialRelationUtil
+import com.wanderlust.community_antiepidemic_system.ApiService
+import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.entity.Area
 import com.wanderlust.community_antiepidemic_system.entity.RiskAreaReq
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
-import com.wanderlust.community_antiepidemic_system.widget.DangerAreaView
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -48,8 +42,10 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     private lateinit var mDangerAreaView: DangerAreaView
 
     //定位
-    private var mLocClientOne: LocationClient? = null
     private var mOneLocMarker: Marker? = null
+    private val mLocClient: LocationClient by lazy {
+        LocationClient(this)
+    }
 
     //包含所有风险地区的列表
     private val mPolyLineList: MutableList<List<List<LatLng>>> = ArrayList()
@@ -75,9 +71,9 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        requestPermission()
+        MapUtils.requestPermission(this)
         initView()
-        startOneLocation()
+        MapUtils.startOneLocation(mLocClient, mOneLocationListener)
         startNetworkRequest()
     }
 
@@ -88,23 +84,8 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
         mBaiduMap.setViewPadding(30, 0, 30, 20)
     }
 
-    //启动单次定位
-    private fun startOneLocation() {
-        mLocClientOne = LocationClient(this)
-        mLocClientOne!!.registerLocationListener(oneLocationListener)
-        val locationClientOption = LocationClientOption()
-        locationClientOption.locationMode = LocationClientOption.LocationMode.Hight_Accuracy
-        locationClientOption.setCoorType("bd09ll")
-        locationClientOption.setScanSpan(0)
-        locationClientOption.setOnceLocation(true)
-        locationClientOption.isOpenGps = true
-        locationClientOption.setIsNeedAddress(true)
-        mLocClientOne!!.locOption = locationClientOption
-        mLocClientOne!!.start()
-    }
-
     //单次定位回调监听
-    private val oneLocationListener: BDAbstractLocationListener = object : BDAbstractLocationListener() {
+    private val mOneLocationListener: BDAbstractLocationListener = object : BDAbstractLocationListener() {
         override fun onReceiveLocation(location: BDLocation?) {
             if (null == location) return
             val latLng = LatLng(location.latitude, location.longitude)
@@ -128,7 +109,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     }
 
     //停止单次定位
-    private fun stopOneLocation() = mLocClientOne?.stop()
+    private fun stopOneLocation() = mLocClient.stop()
 
     //调用卫健委的接口并处理返回
     private fun startNetworkRequest() {
@@ -165,9 +146,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
                 retrofit.getRiskAreaData(RiskAreaReq(timestamp = timestamp)).execute()
             }
             Log.d("aaa", "onResponse: " + response.body())
-            if (response.body() == null) {
-                return@launch
-            }
+            if (response.body() == null) return@launch
             //处理结果
             val result = response.body()!!
             mTotalAreaCount = result.data.highCount + result.data.midCount
@@ -240,7 +219,8 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
         val poiInfo = poiInfos.iterator().next()
         val markerOptions = MarkerOptions().position(poiInfo.getLocation()).icon(
             BitmapDescriptorFactory.fromBitmap(MapUtils.drawBitmapFromVector(
-                this@MapActivity, R.drawable.ic_baseline_location_on_24_red)))
+                this@MapActivity, R.drawable.ic_baseline_location_on_24_red
+            )))
         val textView = TextView(this)
         textView.textSize = 12f
         textView.text = poiInfo.getName()
@@ -283,30 +263,6 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
             }
         }
         return false
-    }
-
-    //Android6.0之后需要动态申请权限
-    private fun requestPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            val permissionsList: ArrayList<String> = ArrayList()
-            val permissions = arrayOf(
-                    Manifest.permission.ACCESS_NETWORK_STATE,
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_WIFI_STATE)
-            for (perm in permissions) {
-                if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm)) {
-                    permissionsList.add(perm)
-                }
-            }
-            if (permissionsList.isNotEmpty()) {
-                val strings = arrayOfNulls<String>(permissionsList.size)
-                requestPermissions(permissionsList.toArray(strings), 0)
-            }
-        }
     }
 
     override fun onDestroy() {

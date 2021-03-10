@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.widget
+package com.wanderlust.community_antiepidemic_system.map
 
 import android.content.Context
 import android.view.LayoutInflater

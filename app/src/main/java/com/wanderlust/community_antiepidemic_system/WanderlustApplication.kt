@@ -3,8 +3,14 @@ package com.wanderlust.community_antiepidemic_system
 import android.app.Application
 import com.baidu.mapapi.CoordType
 import com.baidu.mapapi.SDKInitializer
+import com.wanderlust.community_antiepidemic_system.entity.User
+import com.wanderlust.community_antiepidemic_system.utils.LoginType
 
 class WanderlustApplication: Application() {
+
+    var gType: LoginType? = null
+
+    var gUser: User? = null
 
     override fun onCreate() {
         super.onCreate()

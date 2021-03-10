@@ -1,22 +1,29 @@
 package com.wanderlust.community_antiepidemic_system
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.wanderlust.community_antiepidemic_system.entity.AntiepidemicRsp
-import com.wanderlust.community_antiepidemic_system.entity.RiskAreaReq
-import com.wanderlust.community_antiepidemic_system.entity.RiskAreaRsp
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Response
+import com.wanderlust.community_antiepidemic_system.map.MapActivity
+import com.wanderlust.community_antiepidemic_system.qrcode.QRCodeActivity
+import com.wanderlust.community_antiepidemic_system.utils.DensityUtils
+import com.wanderlust.community_antiepidemic_system.utils.QRCodeUtils
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
+import java.io.ByteArrayOutputStream
+import java.lang.Runnable
+import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +32,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mViewModel: NumberViewModel
 
+    var mCount = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         Thread(Runnable {
             //postRetrofit()
         }).start()
+
     }
 
     private fun init() {
@@ -47,48 +57,9 @@ class MainActivity : AppCompatActivity() {
             mTvNum.text = mViewModel.mNum.toString()
         }
         mTvNum.setOnClickListener {
-            startActivity(Intent(this, MapActivity::class.java))
+            startActivity(Intent(this, QRCodeActivity::class.java))
         }
     }
-
-    private fun postRetrofit() {
-        //疫情风险地区API的URL
-        val baseUrl = "http://103.66.32.242:8005/zwfwMovePortal/interface/"
-        //获得当前时间戳
-        val timestamp = System.currentTimeMillis() / 1000
-        //封装Header数据
-        val client = OkHttpClient.Builder().addInterceptor(object : Interceptor {
-            override fun intercept(chain: Interceptor.Chain): Response {
-                val signatureStr = "$timestamp${RiskAreaReq.STATE_COUNCIL_SIGNATURE_KEY}$timestamp"
-                val signature = RiskAreaReq.getSHA256StrJava(signatureStr).toUpperCase(Locale.ROOT)
-                val build = chain.request().newBuilder()
-                    .addHeader("x-wif-nonce", RiskAreaReq.STATE_COUNCIL_X_WIF_NONCE)
-                    .addHeader("x-wif-paasid", RiskAreaReq.STATE_COUNCIL_X_WIF_PAASID)
-                    .addHeader("x-wif-signature", signature)
-                    .addHeader("x-wif-timestamp", timestamp.toString())
-                    .build()
-                return chain.proceed(build)
-            }
-        }).retryOnConnectionFailure(true).build()
-        //发送请求
-        Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-            .create(ApiService::class.java)
-            .getRiskAreaData(RiskAreaReq(timestamp = timestamp))
-            .enqueue(object : retrofit2.Callback<RiskAreaRsp> {
-                override fun onFailure(call: Call<RiskAreaRsp>, t: Throwable) {
-                    Log.d("aaa", "onFailure: " + t.message)
-                }
-                override fun onResponse(call: Call<RiskAreaRsp>, response: retrofit2.Response<RiskAreaRsp>) {
-                    Log.d("aaa", "onResponse: " + response.body())
-                    mTvNum.text = response.body().toString()
-                }
-            })
-    }
-
 
     private fun postRetrofit2() {
         //疫情统计数据API的URL

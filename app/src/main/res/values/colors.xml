@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimary">#3A93E1</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -12,4 +13,7 @@
     <color name="yellow_middle">#DA8546</color>
     <color name="red_danger_bg">#61E84949</color>
     <color name="yellow_middle_bg">#61DA8546</color>
+    <color name="qr_code_green">#93E167</color>
+    <color name="qr_code_yellow">#EFE483</color>
+    <color name="qr_code_red">#FF7373</color>
 </resources>

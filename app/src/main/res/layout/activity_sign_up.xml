@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorPrimary"
+    tools:context=".login.SignUpActivity">
+
+    <TextView
+        android:id="@+id/sign_up_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="社区疫情防控系统"
+        android:textSize="26sp"
+        android:textColor="#E0E0E0"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="55dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="注册"
+        android:textSize="16sp"
+        android:textColor="#E0E0E0"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/sign_up_title"
+        app:layout_constraintLeft_toRightOf="@id/sign_up_title"
+        app:layout_constraintTop_toTopOf="@id/sign_up_title"
+        android:layout_marginStart="12dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Community Antiepidemic System"
+        android:textColor="#E0E0E0"
+        app:layout_constraintLeft_toLeftOf="@id/sign_up_title"
+        app:layout_constraintTop_toBottomOf="@id/sign_up_title"/>
+
+    <Spinner
+        android:id="@+id/sp_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:backgroundTint="#f5f5f5"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sign_up_title"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="15dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_new_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="#E1E1E1"
+        android:theme="@style/LoginEditText"
+        app:layout_constraintTop_toBottomOf="@id/sp_type"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+        <EditText
+            android:id="@+id/et_new_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:inputType="text"
+            android:maxLines="1"
+            android:singleLine="true"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_new_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="#E1E1E1"
+        android:theme="@style/LoginEditText"
+        app:layout_constraintTop_toBottomOf="@id/til_new_username"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+        <EditText
+            android:id="@+id/et_new_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:singleLine="true"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btn_sign_up"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/button_light"
+        android:foreground="?attr/selectableItemBackground"
+        android:text="注册"
+        android:textColor="@color/colorPrimary"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@id/til_new_password"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="15dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
