@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_home_stats_country"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_lds_now_confirmed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="0"
+            android:textColor="#185C88"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:typeface="sans"
+            android:maxLines="1"/>
+
+        <TextView
+            android:id="@+id/tv_lds_now_confirmed_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="9sp"
+            android:maxLines="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_lds_total_cured"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="0"
+            android:textColor="#24A348"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:typeface="sans"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/tv_lds_total_cured_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="9sp"
+            android:maxLines="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_lds_total_death"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="0"
+            android:textColor="#C51C1C"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:typeface="sans"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/tv_lds_total_death_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="9sp"
+            android:maxLines="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_lds_total_doubtful"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="0"
+            android:textColor="#DCB62A"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:typeface="sans"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/tv_lds_total_doubtful_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="9sp"
+            android:maxLines="2" />
+    </LinearLayout>
+</LinearLayout>

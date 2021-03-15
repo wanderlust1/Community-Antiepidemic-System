@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.entity
+package com.wanderlust.community_antiepidemic_system.event
 
 import com.baidu.mapapi.model.LatLng
 import com.google.gson.annotations.SerializedName

@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">Community-Antiepidemic-System</string>
+
+    <string name="app_name">社区疫情防控系统</string>
+    <string name="app_name_eng">Community Antiepidemic System</string>
+
+    <string name="connection_error">服务器连接失败</string>
+    <string name="timeout_error">服务器连接超时</string>
+    <string name="other_error">出现了未知错误</string>
+
+    <string name="mmkv_def_loc">def_loc</string>
+
 </resources>

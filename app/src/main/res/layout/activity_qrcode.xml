@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="#62ACE4"
-    tools:context=".qrcode.QRCodeActivity">
+    tools:context=".activities.qrcode.QRCodeActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -8,10 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
 import androidx.annotation.DrawableRes
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.content.ContextCompat.checkSelfPermission
 import com.baidu.location.*
-import com.wanderlust.community_antiepidemic_system.map.MapActivity
 
 object MapUtils {
 

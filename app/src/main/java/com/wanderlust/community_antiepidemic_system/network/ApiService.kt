@@ -1,11 +1,11 @@
-package com.wanderlust.community_antiepidemic_system
+package com.wanderlust.community_antiepidemic_system.network
 
-import com.wanderlust.community_antiepidemic_system.entity.AntiepidemicRsp
-import com.wanderlust.community_antiepidemic_system.entity.RiskAreaReq
-import com.wanderlust.community_antiepidemic_system.entity.RiskAreaRsp
+import com.wanderlust.community_antiepidemic_system.event.AntiepidemicRsp
+import com.wanderlust.community_antiepidemic_system.event.RiskAreaReq
+import com.wanderlust.community_antiepidemic_system.event.RiskAreaRsp
 import com.wanderlust.community_antiepidemic_system.entity.User
-import okhttp3.Response
-import okhttp3.ResponseBody
+import com.wanderlust.community_antiepidemic_system.event.UserEvent
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -24,10 +24,18 @@ interface ApiService {
         "Authorization:APPCODE 71ca0d51918e44838eb127c40213e577",
         "Content-Type:application/json; charset=utf-8"
     )
-    @GET("/ncov/cityDiseaseInfoWithTrend")
+    @GET("ncov/cityDiseaseInfoWithTrend")
     fun getAntiepidemicData() : Call<AntiepidemicRsp>
 
     @GET("getUser")
     fun getUserData(@Query("id") id: String, @Query("pw") password: String): Call<User>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("login")
+    fun login(@Body body: RequestBody): Call<UserEvent.LoginRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("register")
+    fun register(@Body body: RequestBody): Call<UserEvent.RegisterRsp>
 
 }

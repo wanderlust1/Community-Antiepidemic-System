@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.map
+package com.wanderlust.community_antiepidemic_system.widget
 
 import android.content.Context
 import android.graphics.Rect
@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.entity.Area
+import com.wanderlust.community_antiepidemic_system.event.Area
 import com.wanderlust.community_antiepidemic_system.utils.DensityUtils
 
 class DangerAreaView : LinearLayout, View.OnClickListener {

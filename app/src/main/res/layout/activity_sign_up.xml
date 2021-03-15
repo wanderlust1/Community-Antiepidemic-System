@@ -7,13 +7,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorPrimary"
-    tools:context=".login.SignUpActivity">
+    tools:context=".activities.login.SignUpActivity">
 
     <TextView
         android:id="@+id/sign_up_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="社区疫情防控系统"
+        android:text="@string/app_name"
         android:textSize="26sp"
         android:textColor="#E0E0E0"
         android:textStyle="bold"
@@ -35,23 +35,13 @@
         android:layout_marginStart="12dp" />
 
     <TextView
+        android:id="@+id/tv_label_eng"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Community Antiepidemic System"
+        android:text="@string/app_name_eng"
         android:textColor="#E0E0E0"
         app:layout_constraintLeft_toLeftOf="@id/sign_up_title"
         app:layout_constraintTop_toBottomOf="@id/sign_up_title"/>
-
-    <Spinner
-        android:id="@+id/sp_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:backgroundTint="#f5f5f5"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sign_up_title"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="15dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_new_username"
@@ -59,10 +49,11 @@
         android:layout_height="wrap_content"
         android:textColorHint="#E1E1E1"
         android:theme="@style/LoginEditText"
-        app:layout_constraintTop_toBottomOf="@id/sp_type"
+        app:layout_constraintTop_toBottomOf="@id/tv_label_eng"
+        android:layout_marginTop="60dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_new_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,7 +61,10 @@
             android:gravity="center_vertical"
             android:inputType="text"
             android:maxLines="1"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:textColor="#f5f5f5"
+            android:textColorHint="#E1E1E1"
+            android:theme="@style/LoginEditText"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -83,14 +77,17 @@
         android:layout_marginTop="20dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_new_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:inputType="textPassword"
             android:maxLines="1"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:textColor="#f5f5f5"
+            android:textColorHint="#E1E1E1"
+            android:theme="@style/LoginEditText" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -106,5 +103,36 @@
         android:layout_marginLeft="15dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="15dp"/>
+
+    <RadioGroup
+        android:id="@+id/rg_sign_up_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_sign_up"
+        android:orientation="horizontal"
+        android:checkedButton="@id/rb_sign_up_user">
+        <RadioButton
+            android:id="@+id/rb_sign_up_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@drawable/check_radio_button"
+            android:text="用户注册"
+            android:paddingStart="4dp"
+            android:textColor="#F1F1F1"
+            android:textSize="13sp"/>
+        <RadioButton
+            android:id="@+id/rb_sign_up_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@drawable/check_radio_button"
+            android:text="社区管理员注册"
+            android:paddingStart="4dp"
+            android:textColor="#F1F1F1"
+            android:layout_marginStart="10dp"
+            android:textSize="13sp"/>
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

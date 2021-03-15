@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".map.MapActivity">
+    tools:context=".activities.map.MapActivity">
 
     <com.baidu.mapapi.map.MapView
         android:id="@+id/map_view"
@@ -22,7 +22,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <com.wanderlust.community_antiepidemic_system.map.DangerAreaView
+        <com.wanderlust.community_antiepidemic_system.widget.DangerAreaView
             android:id="@+id/dav_map_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -20,6 +20,13 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <style name="Theme.PrimaryStatusBg" parent="Theme.CommunityAntiepidemicSystem">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+    </style>
+
     <style name="LoginEditText" parent="Theme.AppCompat.Light">
         <item name="colorControlNormal">#E0E0E0</item>
         <item name="colorControlActivated">#F5F5F5</item>

@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.map
+package com.wanderlust.community_antiepidemic_system.widget
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.entity.Area
+import com.wanderlust.community_antiepidemic_system.event.Area
 
 class DangerAreaAdapter(private val mHighList: List<Area>,
                         private val mMidList: List<Area>,

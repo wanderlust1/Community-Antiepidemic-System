@@ -64,6 +64,9 @@ dependencies {
     implementation files('libs\\BaiduLBS_Android.jar')
     implementation 'androidx.wear:wear:1.0.0'
 
+    //MMKV
+    implementation 'com.tencent:mmkv:1.0.22'
+
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

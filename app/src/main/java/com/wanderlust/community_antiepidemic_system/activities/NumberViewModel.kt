@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system
+package com.wanderlust.community_antiepidemic_system.activities
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

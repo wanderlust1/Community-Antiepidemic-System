@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.qrcode
+package com.wanderlust.community_antiepidemic_system.activities.qrcode
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -8,15 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.wanderlust.community_antiepidemic_system.ApiService
+import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.entity.AntiepidemicRsp
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.utils.DensityUtils
 import com.wanderlust.community_antiepidemic_system.utils.QRCodeUtils
+import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
 import kotlinx.coroutines.*
-import okhttp3.Response
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -76,11 +74,9 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun requestUserData() {
-        //疫情统计数据API的URL
-        val baseUrl = "http://192.168.205.66:8080/wanderlust-cas-service/"
         //发送请求
         Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(UrlUtils.SERVICE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
@@ -94,6 +90,11 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
                     showQRCode(Gson().toJson(response.body()))
                 }
             })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mJob.cancel()
     }
 
 }

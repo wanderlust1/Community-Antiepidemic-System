@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.map
+package com.wanderlust.community_antiepidemic_system.activities.map
 
 import android.os.Bundle
 import android.util.Log
@@ -20,11 +20,13 @@ import com.baidu.mapapi.search.district.DistrictSearch
 import com.baidu.mapapi.search.district.DistrictSearchOption
 import com.baidu.mapapi.search.poi.*
 import com.baidu.mapapi.utils.SpatialRelationUtil
-import com.wanderlust.community_antiepidemic_system.ApiService
+import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.entity.Area
-import com.wanderlust.community_antiepidemic_system.entity.RiskAreaReq
+import com.wanderlust.community_antiepidemic_system.event.Area
+import com.wanderlust.community_antiepidemic_system.event.RiskAreaReq
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
+import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
+import com.wanderlust.community_antiepidemic_system.widget.DangerAreaView
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -37,13 +39,17 @@ import kotlin.coroutines.CoroutineContext
 
 class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, CoroutineScope {
 
+    companion object {
+        const val TAG = "MapActivity"
+    }
+
     private lateinit var mBaiduMap: BaiduMap
     private lateinit var mMapView: MapView
     private lateinit var mDangerAreaView: DangerAreaView
 
     //定位
     private var mOneLocMarker: Marker? = null
-    private val mLocClient: LocationClient by lazy {
+    private val mLocationClient: LocationClient by lazy {
         LocationClient(this)
     }
 
@@ -73,7 +79,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
         setContentView(R.layout.activity_map)
         MapUtils.requestPermission(this)
         initView()
-        MapUtils.startOneLocation(mLocClient, mOneLocationListener)
+        MapUtils.startOneLocation(mLocationClient, mOneLocationListener)
         startNetworkRequest()
     }
 
@@ -109,14 +115,12 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     }
 
     //停止单次定位
-    private fun stopOneLocation() = mLocClient.stop()
+    private fun stopOneLocation() = mLocationClient.stop()
 
     //调用卫健委的接口并处理返回
     private fun startNetworkRequest() {
         mJob = Job()
         launch {
-            //疫情风险地区API的URL
-            val baseUrl = "http://103.66.32.242:8005/zwfwMovePortal/interface/"
             //获得当前时间戳
             val timestamp = System.currentTimeMillis() / 1000
             //封装Header数据
@@ -137,7 +141,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
             }
             //创建发送请求
             val retrofit = Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(UrlUtils.AREA_DATA_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()
@@ -145,7 +149,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
             val response = withContext(Dispatchers.IO) {
                 retrofit.getRiskAreaData(RiskAreaReq(timestamp = timestamp)).execute()
             }
-            Log.d("aaa", "onResponse: " + response.body())
+            Log.d(TAG, "onResponse: " + response.body())
             if (response.body() == null) return@launch
             //处理结果
             val result = response.body()!!
