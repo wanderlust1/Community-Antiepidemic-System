@@ -1,222 +1,324 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dl_home_drawer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F6F6F6"
-    tools:context=".activities.home.UserHomeActivity">
+    android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/rl_home_toolbar"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/colorPrimary"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="#F6F6F6"
+        tools:context=".activities.home.UserHomeActivity">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="15dp"
-            android:text="@string/app_name"
-            android:textColor="#fff"
-            android:textSize="17sp" />
-
-        <ImageView
-            android:id="@+id/iv_home_self"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_baseline_person_24"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
-
-        <ImageView
-            android:id="@+id/iv_home_notification"
-            android:layout_width="21dp"
-            android:layout_height="21dp"
-            android:layout_toStartOf="@id/iv_home_self"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="15dp"
-            android:src="@drawable/ic_baseline_notifications_24"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_home_disease_stats"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@drawable/bg_white_round_corner"
-        app:layout_constraintTop_toBottomOf="@id/rl_home_toolbar">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:text="抗击新冠肺炎"
-            android:textColor="#2C2C2C"
-            android:textSize="16dp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv_home_stats_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="10dp"
-            android:textSize="12dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp"
-            android:layout_below="@id/tv_home_stats_time"
-            android:layout_marginTop="14dp"
-            android:background="#DFDFDF"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
-
-        <com.wanderlust.community_antiepidemic_system.widget.DiseaseStatsView
-            android:id="@+id/dsv_home_stats_country"
+        <FrameLayout
+            android:id="@+id/rl_home_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_home_stats_time"
-            android:layout_marginTop="24dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="12dp"/>
-
-        <com.wanderlust.community_antiepidemic_system.widget.DiseaseStatsView
-            android:id="@+id/dsv_home_stats_province"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/dsv_home_stats_country"
-            android:orientation="horizontal"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="12dp"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp"
-            android:layout_below="@id/dsv_home_stats_province"
-            android:background="#DFDFDF"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
+            android:background="@color/colorPrimary"
+            app:layout_constraintTop_toTopOf="parent"
+            android:fitsSystemWindows="true">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/app_name"
+                    android:textColor="#fff"
+                    android:textSize="17sp" />
+                <ImageView
+                    android:id="@+id/iv_home_self"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_baseline_person_24" />
+                <ImageView
+                    android:id="@+id/iv_home_notification"
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_toStartOf="@id/iv_home_self"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_baseline_notifications_24" />
+            </RelativeLayout>
+        </FrameLayout>
 
         <RelativeLayout
-            android:id="@+id/rl_home_danger_map"
-            android:layout_width="wrap_content"
+            android:id="@+id/rl_home_disease_stats"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="15dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="15dp"
-            android:paddingBottom="10dp"
-            android:focusable="true"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:layout_below="@id/dsv_home_stats_province">
-            <ImageView
-                android:id="@+id/iv_home_danger_map"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_baseline_near_me_24"/>
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_white_round_corner"
+            app:layout_constraintTop_toBottomOf="@id/rl_home_toolbar">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="查看风险地区信息"
-                android:textColor="#353535"
-                android:textSize="13sp"
-                android:layout_centerVertical="true"
-                android:layout_marginTop="3dp"
-                android:layout_toEndOf="@id/iv_home_danger_map"
-                android:layout_marginStart="10dp"/>
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_baseline_arrow_right_black"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="抗击新冠肺炎"
+                android:textColor="#2C2C2C"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_home_stats_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="10dp"
+                android:textSize="12dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"
+                android:layout_below="@id/tv_home_stats_time"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginRight="10dp"
+                android:background="#DFDFDF" />
+
+            <com.wanderlust.community_antiepidemic_system.widget.DiseaseStatsView
+                android:id="@+id/dsv_home_stats_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_home_stats_time"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="12dp" />
+
+            <com.wanderlust.community_antiepidemic_system.widget.DiseaseStatsView
+                android:id="@+id/dsv_home_stats_province"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dsv_home_stats_country"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="12dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"
+                android:layout_below="@id/dsv_home_stats_province"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#DFDFDF" />
+
+            <RelativeLayout
+                android:id="@+id/rl_home_danger_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dsv_home_stats_province"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingStart="15dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/iv_home_danger_map"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_baseline_near_me_24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_toEndOf="@id/iv_home_danger_map"
+                    android:text="查看风险地区信息"
+                    android:textColor="#353535"
+                    android:textSize="13sp" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_baseline_arrow_right_black" />
+            </RelativeLayout>
         </RelativeLayout>
-    </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_home_my_community"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_white_round_corner"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="4dp"
+            app:layout_constraintTop_toBottomOf="@id/rl_home_disease_stats">
+
+            <TextView
+                android:id="@+id/tv_home_my_community"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/ic_baseline_home_24"
+                android:drawablePadding="12dp"
+                android:gravity="center_vertical"
+                android:text="广东外语外贸大学南苑13栋"
+                android:textColor="#353535"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_home_my_community_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_home_my_community"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:drawableEnd="@drawable/ic_baseline_arrow_right_gray"
+                android:drawablePadding="-2dp"
+                android:gravity="center_vertical"
+                android:text="修改我的社区"
+                android:textColor="#B8B8B8"
+                android:textSize="12dp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_home_health_qrcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_white_round_corner"
+            android:clickable="true"
+            android:drawableStart="@drawable/ic_baseline_qr_code_24"
+            android:drawablePadding="12dp"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:padding="13dp"
+            android:text="我的健康码"
+            android:textColor="#353535"
+            android:textSize="15sp"
+            app:layout_constraintTop_toBottomOf="@id/rl_home_my_community" />
+
+        <TextView
+            android:id="@+id/tv_home_register_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_white_round_corner"
+            android:clickable="true"
+            android:drawableStart="@drawable/ic_baseline_playlist_add_check_24"
+            android:drawablePadding="12dp"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:padding="13dp"
+            android:text="体温登记"
+            android:textColor="#353535"
+            android:textSize="15sp"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_health_qrcode" />
+
+        <TextView
+            android:id="@+id/tv_home_register_out_side"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_white_round_corner"
+            android:clickable="true"
+            android:drawableStart="@drawable/ic_baseline_playlist_add_check_2"
+            android:drawablePadding="12dp"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:padding="13dp"
+            android:text="外出登记"
+            android:textColor="#353535"
+            android:textSize="15sp"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_register_temperature" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_home_drawer_main"
+        android:layout_width="220dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="@color/colorPrimary"
+        android:fitsSystemWindows="true">
+    <ImageView
+        android:id="@+id/iv_home_drawer"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_baseline_person_24"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="15dp"/>
 
     <TextView
-        android:id="@+id/tv_home_my_community"
-        android:layout_width="match_parent"
+        android:id="@+id/tv_home_drawer_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="广东外语外贸大学南苑13栋"
-        android:textSize="15sp"
-        android:textColor="#353535"
-        android:textStyle=""
-        android:drawablePadding="12dp"
-        android:drawableStart="@drawable/ic_baseline_home_24"
-        android:gravity="center_vertical"
-        android:padding="13dp"
-        android:focusable="true"
-        android:clickable="true"
-        android:background="@drawable/bg_white_round_corner"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/rl_home_disease_stats" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintLeft_toRightOf="@id/iv_home_drawer"
+        app:layout_constraintTop_toTopOf="@id/iv_home_drawer"
+        app:layout_constraintBottom_toTopOf="@+id/tv_home_drawer_id" />
 
     <TextView
-        android:id="@+id/tv_home_health_qrcode"
-        android:layout_width="match_parent"
+        android:id="@+id/tv_home_drawer_id"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="我的健康码"
-        android:textSize="15sp"
-        android:drawablePadding="12dp"
-        android:drawableStart="@drawable/ic_baseline_qr_code_24"
-        android:textColor="#353535"
-        android:gravity="center_vertical"
-        android:padding="13dp"
-        android:focusable="true"
-        android:clickable="true"
-        android:background="@drawable/bg_white_round_corner"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/tv_home_my_community" />
+        android:textSize="13sp"
+        android:textColor="#D3D3D3"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintLeft_toRightOf="@id/iv_home_drawer"
+        app:layout_constraintTop_toBottomOf="@id/tv_home_drawer_name"
+        app:layout_constraintBottom_toBottomOf="@id/iv_home_drawer"/>
 
     <TextView
-        android:id="@+id/tv_home_register_temperature"
-        android:layout_width="match_parent"
+        android:id="@+id/tv_home_drawer_community"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="体温登记"
         android:textSize="15sp"
-        android:textColor="#353535"
-        android:drawablePadding="12dp"
-        android:drawableStart="@drawable/ic_baseline_playlist_add_check_24"
+        android:textColor="#fff"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:drawableStart="@drawable/ic_baseline_home_white"
+        android:drawablePadding="5dp"
         android:gravity="center_vertical"
-        android:padding="13dp"
-        android:focusable="true"
-        android:clickable="true"
-        android:background="@drawable/bg_white_round_corner"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/tv_home_health_qrcode" />
+        app:layout_constraintTop_toBottomOf="@id/iv_home_drawer"
+        app:layout_constraintLeft_toLeftOf="@id/iv_home_drawer"/>
 
     <TextView
-        android:id="@+id/tv_home_register_out_side"
-        android:layout_width="match_parent"
+        android:id="@+id/tv_home_drawer_cid"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="外出登记"
         android:textSize="15sp"
-        android:textColor="#353535"
-        android:drawablePadding="12dp"
-        android:drawableStart="@drawable/ic_baseline_playlist_add_check_2"
+        android:textColor="#fff"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:drawableStart="@drawable/ic_baseline_bookmark_white"
+        android:drawablePadding="5dp"
         android:gravity="center_vertical"
-        android:padding="13dp"
-        android:focusable="true"
-        android:clickable="true"
-        android:background="@drawable/bg_white_round_corner"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/tv_home_register_temperature" />
+        app:layout_constraintTop_toBottomOf="@id/tv_home_drawer_community"
+        app:layout_constraintLeft_toLeftOf="@id/iv_home_drawer"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

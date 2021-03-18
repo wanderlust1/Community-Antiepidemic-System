@@ -18,10 +18,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityAntiepidemicSystem">
-        <activity android:name="com.wanderlust.community_antiepidemic_system.activities.home.UserHomeActivity"
-            android:theme="@style/Theme.PrimaryStatusBg"/>
+        <activity android:name=".activities.register.OutsideActivity"
+            android:theme="@style/Theme.WhiteStatusText"/>
+        <activity android:name=".activities.register.TemperatureActivity"
+            android:theme="@style/Theme.WhiteStatusText" />
         <activity
-            android:name="com.wanderlust.community_antiepidemic_system.activities.login.LoginActivity"
+            android:name=".activities.search.SearchCommunityActivity"
+            android:theme="@style/Theme.PrimaryStatusBg" />
+        <activity
+            android:name=".activities.home.UserHomeActivity"
+            android:theme="@style/Theme.WhiteStatusText" />
+        <activity
+            android:name=".activities.login.LoginActivity"
             android:theme="@style/Theme.WhiteStatusText">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,13 +38,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.wanderlust.community_antiepidemic_system.activities.login.SignUpActivity"
+            android:name=".activities.login.SignUpActivity"
             android:theme="@style/Theme.WhiteStatusText" />
         <activity
-            android:name="com.wanderlust.community_antiepidemic_system.activities.qrcode.QRCodeActivity"
+            android:name=".activities.qrcode.QRCodeActivity"
             android:theme="@style/Theme.WhiteStatusText" />
-        <activity android:name="com.wanderlust.community_antiepidemic_system.activities.map.MapActivity" />
-        <activity android:name=".activities.MainActivity"/>
+        <activity android:name=".activities.map.MapActivity" />
+        <activity android:name=".activities.MainActivity" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"

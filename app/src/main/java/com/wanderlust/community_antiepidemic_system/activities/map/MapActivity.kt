@@ -26,6 +26,7 @@ import com.wanderlust.community_antiepidemic_system.event.Area
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaReq
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
 import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
+import com.wanderlust.community_antiepidemic_system.utils.toast
 import com.wanderlust.community_antiepidemic_system.widget.DangerAreaView
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
@@ -110,7 +111,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
                     location.locType == BDLocation.TypeNetWorkLocation ||
                     location.locType == BDLocation.TypeOffLineLocation
             judgementDangerZone()
-            Toast.makeText(this@MapActivity, MapUtils.formatLocType(location.locType), Toast.LENGTH_SHORT).show()
+            MapUtils.formatLocType(location.locType).toast(this@MapActivity)
         }
     }
 

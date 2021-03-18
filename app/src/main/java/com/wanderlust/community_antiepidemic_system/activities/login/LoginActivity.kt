@@ -48,7 +48,6 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
     // 已选择的登录类型、账号密码
     private var mSelectedType = LoginType.USER
 
-    // 登录进度条
     private val mDialog: DialogUtils by lazy { DialogUtils(this) }
 
     //协程
@@ -157,7 +156,7 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
                 R.string.connection_error.toast(this@LoginActivity)
                 null
             } catch (e: Exception) {
-                R.string.other_error.toast(this@LoginActivity)
+                R.string.timeout_error.toast(this@LoginActivity)
                 null
             }
             Log.d(TAG, "onResponse: " + response?.body())

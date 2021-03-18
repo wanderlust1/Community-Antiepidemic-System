@@ -90,6 +90,51 @@
             android:theme="@style/LoginEditText" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_new_cid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="#E1E1E1"
+        android:theme="@style/LoginEditText"
+        app:layout_constraintTop_toBottomOf="@id/til_new_password"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_new_cid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="#f5f5f5"
+            android:textColorHint="#E1E1E1"
+            android:theme="@style/LoginEditText" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_new_true_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="#E1E1E1"
+        android:theme="@style/LoginEditText"
+        app:layout_constraintTop_toBottomOf="@id/til_new_cid"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_new_true_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="#f5f5f5"
+            android:textColorHint="#E1E1E1"
+            android:theme="@style/LoginEditText" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/btn_sign_up"
         android:layout_width="match_parent"
@@ -99,7 +144,7 @@
         android:text="注册"
         android:textColor="@color/colorPrimary"
         android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@id/til_new_password"
+        app:layout_constraintTop_toBottomOf="@id/til_new_true_name"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="15dp"/>

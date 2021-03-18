@@ -1,10 +1,7 @@
 package com.wanderlust.community_antiepidemic_system.network
 
-import com.wanderlust.community_antiepidemic_system.event.AntiepidemicRsp
-import com.wanderlust.community_antiepidemic_system.event.RiskAreaReq
-import com.wanderlust.community_antiepidemic_system.event.RiskAreaRsp
 import com.wanderlust.community_antiepidemic_system.entity.User
-import com.wanderlust.community_antiepidemic_system.event.UserEvent
+import com.wanderlust.community_antiepidemic_system.event.*
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -37,5 +34,13 @@ interface ApiService {
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("register")
     fun register(@Body body: RequestBody): Call<UserEvent.RegisterRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("searchCommunity")
+    fun searchCommunity(@Body body: RequestBody): Call<CommunityEvent.SearchRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("joinCommunity")
+    fun joinCommunity(@Body body: RequestBody): Call<CommunityEvent.JoinRsp>
 
 }

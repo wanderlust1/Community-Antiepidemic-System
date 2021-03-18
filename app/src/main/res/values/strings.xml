@@ -7,6 +7,7 @@
     <string name="timeout_error">服务器连接超时</string>
     <string name="other_error">出现了未知错误</string>
 
-    <string name="mmkv_def_loc">def_loc</string>
+    <string name="mmkv_def_loc_province">def_loc_province</string>
+    <string name="mmkv_def_loc_city">def_loc_city</string>
 
 </resources>

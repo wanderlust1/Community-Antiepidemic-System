@@ -16,7 +16,6 @@
             android:id="@+id/tv_qr_area_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="广州市"
             android:textStyle="bold"
             android:textSize="22sp"
             android:textColor="#F3F3F3"
@@ -25,7 +24,6 @@
             android:id="@+id/tv_qr_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2021年3月7日 22:34:30"
             android:layout_marginEnd="30dp"
             android:textColor="#FAFAFA"
             android:textSize="18sp"
@@ -46,7 +44,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="兴宁市 宁江新城小区"
             android:textSize="14sp"
             android:textColor="#353535"
             android:layout_marginTop="10dp"/>
@@ -54,7 +51,6 @@
             android:id="@+id/tv_qr_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="许*龙"
             android:textSize="18dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="3dp"/>
@@ -67,11 +63,10 @@
             android:layout_marginTop="15dp" />
 
         <TextView
-            android:id="@+id/iv_qr_health_tips"
+            android:id="@+id/tv_qr_health_tips"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="暂未发现健康问题"
             android:textColor="@color/qr_code_green"
             android:textSize="13sp"
             android:layout_marginTop="10dp" />

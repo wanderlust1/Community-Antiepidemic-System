@@ -3,28 +3,40 @@ package com.wanderlust.community_antiepidemic_system.activities.home
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
 import com.tencent.mmkv.MMKV
 import com.wanderlust.community_antiepidemic_system.R
+import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.activities.map.MapActivity
 import com.wanderlust.community_antiepidemic_system.activities.qrcode.QRCodeActivity
+import com.wanderlust.community_antiepidemic_system.activities.search.SearchCommunityActivity
 import com.wanderlust.community_antiepidemic_system.event.AntiepidemicRsp
+import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
 import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import com.wanderlust.community_antiepidemic_system.widget.DiseaseStatsView
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
 import kotlin.coroutines.CoroutineContext
+
 
 class UserHomeActivity : AppCompatActivity(), CoroutineScope {
 
@@ -39,9 +51,16 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var mDsvCountry: DiseaseStatsView
     private lateinit var mDsvProvince: DiseaseStatsView
     private lateinit var mTvMyCommunity: TextView
+    private lateinit var mTvMyCommunityTips: TextView
+    private lateinit var mRlMyCommunity: RelativeLayout
     private lateinit var mTvQRCode: TextView
     private lateinit var mTvTemperature: TextView
     private lateinit var mTvOutSide: TextView
+    private lateinit var mDrawer: DrawerLayout
+    private lateinit var mDrawerName: TextView
+    private lateinit var mDrawerId: TextView
+    private lateinit var mDrawerCommunity: TextView
+    private lateinit var mDrawerCid: TextView
 
     private val mJob: Job by lazy { Job() }
     override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
@@ -55,6 +74,7 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_home)
+        EventBus.getDefault().register(this)
         initView()
         setView()
         requestDiseaseData()
@@ -68,14 +88,22 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
         mDsvCountry = findViewById(R.id.dsv_home_stats_country)
         mDsvProvince = findViewById(R.id.dsv_home_stats_province)
         mTvMyCommunity = findViewById(R.id.tv_home_my_community)
+        mTvMyCommunityTips = findViewById(R.id.tv_home_my_community_tips)
+        mRlMyCommunity = findViewById(R.id.rl_home_my_community)
         mTvQRCode = findViewById(R.id.tv_home_health_qrcode)
         mTvTemperature = findViewById(R.id.tv_home_register_temperature)
         mTvOutSide = findViewById(R.id.tv_home_register_out_side)
+        mDrawer = findViewById(R.id.dl_home_drawer)
+        mDrawerName = findViewById(R.id.tv_home_drawer_name)
+        mDrawerCid = findViewById(R.id.tv_home_drawer_cid)
+        mDrawerCommunity = findViewById(R.id.tv_home_drawer_community)
+        mDrawerId = findViewById(R.id.tv_home_drawer_id)
     }
 
     private fun setView() {
+        val user = (application as WanderlustApp).gUser
         mIvPerson.setOnClickListener {
-
+            mDrawer.openDrawer(GravityCompat.END)
         }
         mIvNotify.setOnClickListener {
 
@@ -85,6 +113,21 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
         }
         mTvQRCode.setOnClickListener {
             startActivity(Intent(this, QRCodeActivity::class.java))
+        }
+        mDrawerName.text = user?.userName
+        mDrawerId.text = "ID ${user?.userId}"
+        mDrawerCid.text = user?.cid
+        setMyCommunity()
+    }
+
+    private fun setMyCommunity() {
+        val user = (application as WanderlustApp).gUser
+        val community = if (user != null && user.communityName.isNotEmpty()) user.communityName else "尚未加入社区"
+        mTvMyCommunity.text = community
+        mDrawerCommunity.text = community
+        mTvMyCommunityTips.text = if (user != null && user.communityName.isNotEmpty()) "修改我的社区" else "搜索并加入社区"
+        mRlMyCommunity.setOnClickListener {
+            startActivity(Intent(this, SearchCommunityActivity::class.java))
         }
     }
 
@@ -114,7 +157,7 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
             mDsvCountry.setData(mResult?.country)
             mDsvProvince.setData(mResult?.provinceArray?.find {
                 it.childStatistic.contains(
-                    kv.decodeString(resources.getString(R.string.mmkv_def_loc), "error"))
+                    kv.decodeString(resources.getString(R.string.mmkv_def_loc_province), "error"))
             })
             MapUtils.startOneLocation(mLocationClient, mLocationListener)
         }
@@ -127,13 +170,19 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
             mDsvProvince.setData(mResult?.provinceArray?.find {
                 it.childStatistic.contains(location.province)
             })
-            kv.encode(resources.getString(R.string.mmkv_def_loc), location.province)
+            kv.encode(resources.getString(R.string.mmkv_def_loc_province), location.province)
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onCommunityChange(event: BusEvent.OnCommunityChange) {
+        setMyCommunity()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mJob.cancel()
+        EventBus.getDefault().unregister(this);
     }
 
 }
