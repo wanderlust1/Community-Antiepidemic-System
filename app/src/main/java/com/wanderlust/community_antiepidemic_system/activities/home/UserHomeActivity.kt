@@ -3,15 +3,13 @@ package com.wanderlust.community_antiepidemic_system.activities.home
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
@@ -20,9 +18,11 @@ import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.activities.map.MapActivity
 import com.wanderlust.community_antiepidemic_system.activities.qrcode.QRCodeActivity
+import com.wanderlust.community_antiepidemic_system.activities.register.OutsideActivity
+import com.wanderlust.community_antiepidemic_system.activities.register.TemperatureActivity
 import com.wanderlust.community_antiepidemic_system.activities.search.SearchCommunityActivity
-import com.wanderlust.community_antiepidemic_system.event.AntiepidemicRsp
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
+import com.wanderlust.community_antiepidemic_system.event.DiseaseDataEvent
 import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
 import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
@@ -36,7 +36,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
 import kotlin.coroutines.CoroutineContext
-
 
 class UserHomeActivity : AppCompatActivity(), CoroutineScope {
 
@@ -61,6 +60,8 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var mDrawerId: TextView
     private lateinit var mDrawerCommunity: TextView
     private lateinit var mDrawerCid: TextView
+    private lateinit var mDrawerPhone: TextView
+    private lateinit var mRefreshLayout: SwipeRefreshLayout
 
     private val mJob: Job by lazy { Job() }
     override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
@@ -69,7 +70,7 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
 
     private val kv: MMKV by lazy { MMKV.defaultMMKV() }
 
-    private var mResult: AntiepidemicRsp? = null
+    private var mResult: DiseaseDataEvent.AntiepidemicRsp? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +99,8 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
         mDrawerCid = findViewById(R.id.tv_home_drawer_cid)
         mDrawerCommunity = findViewById(R.id.tv_home_drawer_community)
         mDrawerId = findViewById(R.id.tv_home_drawer_id)
+        mDrawerPhone = findViewById(R.id.tv_home_drawer_phone)
+        mRefreshLayout = findViewById(R.id.srl_home)
     }
 
     private fun setView() {
@@ -114,9 +117,19 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
         mTvQRCode.setOnClickListener {
             startActivity(Intent(this, QRCodeActivity::class.java))
         }
+        mTvTemperature.setOnClickListener {
+            startActivity(Intent(this, TemperatureActivity::class.java))
+        }
+        mTvOutSide.setOnClickListener {
+            startActivity(Intent(this, OutsideActivity::class.java))
+        }
+        mRefreshLayout.setOnRefreshListener {
+            requestDiseaseData()
+        }
         mDrawerName.text = user?.userName
         mDrawerId.text = "ID ${user?.userId}"
         mDrawerCid.text = user?.cid
+        mDrawerPhone.text = user?.phone
         setMyCommunity()
     }
 
@@ -150,6 +163,7 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
                 R.string.other_error.toast(this@UserHomeActivity)
                 null
             }
+            mRefreshLayout.isRefreshing = false
             Log.d(TAG, response?.body().toString())
             if (response?.body() == null) return@launch
             mResult = response.body()!!

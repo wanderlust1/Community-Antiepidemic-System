@@ -69,6 +69,10 @@ dependencies {
 
     //EventBus
     implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    //picker
+    implementation 'com.contrarywind:Android-PickerView:4.1.9'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

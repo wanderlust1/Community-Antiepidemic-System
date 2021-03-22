@@ -15,14 +15,14 @@ interface ApiService {
                 + "Chrome/88.0.4324.150 Safari/537.36"
     )
     @POST("interfaceJson")
-    fun getRiskAreaData(@Body riskAreaReq: RiskAreaReq) : Call<RiskAreaRsp>
+    fun getRiskAreaData(@Body riskAreaReq: RiskAreaEvent.RiskAreaReq) : Call<RiskAreaEvent.RiskAreaRsp>
 
     @Headers(
         "Authorization:APPCODE 71ca0d51918e44838eb127c40213e577",
         "Content-Type:application/json; charset=utf-8"
     )
     @GET("ncov/cityDiseaseInfoWithTrend")
-    fun getAntiepidemicData() : Call<AntiepidemicRsp>
+    fun getAntiepidemicData() : Call<DiseaseDataEvent.AntiepidemicRsp>
 
     @GET("getUser")
     fun getUserData(@Query("id") id: String, @Query("pw") password: String): Call<User>
@@ -42,5 +42,21 @@ interface ApiService {
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("joinCommunity")
     fun joinCommunity(@Body body: RequestBody): Call<CommunityEvent.JoinRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("getTemperRecord")
+    fun getTemperRecord(@Body body: RequestBody): Call<RegEvent.GetTemperRecordRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("getOutsideRecord")
+    fun getOutsideRecord(@Body body: RequestBody): Call<RegEvent.GetOutSideRecordRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("addTemperReg")
+    fun addTemperReg(@Body body: RequestBody): Call<RegEvent.AddTemperRecordRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("addOutsideReg")
+    fun addOutsideReg(@Body body: RequestBody): Call<RegEvent.AddOutsideRecordRsp>
 
 }

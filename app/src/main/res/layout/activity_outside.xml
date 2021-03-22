@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.register.TemperatureActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:stateListAnimator="@animator/appbar_elevation"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="#00000000">
+            <ImageView
+                android:id="@+id/iv_outside_back"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="20dp"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_baseline_arrow_back_ios_24"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="外出登记管理"
+                android:textSize="16sp"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_outside"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            app:tabRippleColor="#E7E7E7"
+            app:tabIndicatorColor="#fff"
+            app:tabIndicatorHeight="2dp"
+            app:tabSelectedTextColor="#fff"
+            app:tabTextColor="#fff"/>
+    </LinearLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vp_outside"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</LinearLayout>

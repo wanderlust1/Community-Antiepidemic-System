@@ -17,6 +17,7 @@ import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.R
+import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.utils.DensityUtils
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
@@ -46,6 +47,7 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
     override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
 
     private val mLocationClient: LocationClient by lazy { LocationClient(this) }
+    private var mLocationText = ""
 
     private val kv: MMKV by lazy { MMKV.defaultMMKV() }
 
@@ -72,6 +74,10 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
         if (location != null) {
             mTvArea.text = location
         }
+        val user = (application as WanderlustApp).gUser ?: return
+        mTvCommunity.text = user.communityName
+        mTvName.text = "${user.userName[0]}*${user.userName[user.userName.length - 1]}"
+        mTvHealthHint.text = "暂未发现健康问题"
     }
 
     private fun showQRCode(content: String) {
@@ -137,9 +143,10 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
     //定位回调
     private val mLocationListener: BDAbstractLocationListener = object : BDAbstractLocationListener() {
         override fun onReceiveLocation(location: BDLocation?) {
-            if (location == null || location.city == null) return
-            mTvArea.text = location.city
-            kv.encode(resources.getString(R.string.mmkv_def_loc_city), location.province)
+            if (location == null || location.district == null) return
+            mLocationText = location.district
+            mTvArea.text = location.district
+            kv.encode(resources.getString(R.string.mmkv_def_loc_city), location.district)
         }
     }
 

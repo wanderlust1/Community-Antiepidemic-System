@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.event.Statistics
+import com.wanderlust.community_antiepidemic_system.event.DiseaseDataEvent
 
 class DiseaseStatsView: LinearLayout {
 
@@ -23,7 +23,7 @@ class DiseaseStatsView: LinearLayout {
     private lateinit var mTvTotalDoubtful: TextView
     private lateinit var mTvTotalDoubtfulHint: TextView
 
-    private var mData: Statistics? = null
+    private var mData: DiseaseDataEvent.Statistics? = null
 
     constructor(context: Context?) : super(context, null) {
         mContext = context
@@ -54,7 +54,7 @@ class DiseaseStatsView: LinearLayout {
     }
 
     @SuppressLint("SetTextI18n")
-    fun setData(data: Statistics?) {
+    fun setData(data: DiseaseDataEvent.Statistics?) {
         if (data == null || mData != null) {
             if (mData == null) visibility = View.GONE
             return

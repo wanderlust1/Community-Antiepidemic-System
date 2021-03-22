@@ -8,11 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.event.Area
+import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
 
-class DangerAreaAdapter(private val mHighList: List<Area>,
-                        private val mMidList: List<Area>,
-                        private val mListener: (area: Area) -> Unit): RecyclerView.Adapter<DangerAreaAdapter.ContentViewHolder>() {
+class DangerAreaAdapter(private val mHighList: List<RiskAreaEvent.Area>,
+                        private val mMidList: List<RiskAreaEvent.Area>,
+                        private val mListener: (area: RiskAreaEvent.Area) -> Unit): RecyclerView.Adapter<DangerAreaAdapter.ContentViewHolder>() {
 
     private var mContext: Context? = null
 
@@ -29,7 +29,7 @@ class DangerAreaAdapter(private val mHighList: List<Area>,
     }
 
     override fun onBindViewHolder(holder: ContentViewHolder, position: Int) {
-        val empty = Area()
+        val empty = RiskAreaEvent.Area()
         val area = if (mHighList.isEmpty()) {
             if (position == 0) empty else if (mMidList.isEmpty() && position == 1) empty else mMidList[position - 1]
         } else if (mMidList.isEmpty() && position == mHighList.size) {

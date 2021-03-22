@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.event.Area
+import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
 import com.wanderlust.community_antiepidemic_system.utils.DensityUtils
 
 class DangerAreaView : LinearLayout, View.OnClickListener {
@@ -56,7 +56,9 @@ class DangerAreaView : LinearLayout, View.OnClickListener {
         setOnClickListener(this)
     }
 
-    fun setData(highList: List<Area>, midList: List<Area>, listener: (area: Area) -> Unit) {
+    fun setData(highList: List<RiskAreaEvent.Area>,
+                midList: List<RiskAreaEvent.Area>,
+                listener: (area: RiskAreaEvent.Area) -> Unit) {
         mRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                 if (parent.getChildAdapterPosition(view) != 0 && mContext != null) {

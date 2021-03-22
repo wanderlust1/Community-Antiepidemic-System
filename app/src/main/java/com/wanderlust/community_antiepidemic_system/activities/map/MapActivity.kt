@@ -22,8 +22,7 @@ import com.baidu.mapapi.search.poi.*
 import com.baidu.mapapi.utils.SpatialRelationUtil
 import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.event.Area
-import com.wanderlust.community_antiepidemic_system.event.RiskAreaReq
+import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
 import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
@@ -128,11 +127,11 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
             val client = withContext(Dispatchers.IO) {
                 OkHttpClient.Builder().addInterceptor(object : Interceptor {
                     override fun intercept(chain: Interceptor.Chain): Response {
-                        val signatureStr = "$timestamp${RiskAreaReq.STATE_COUNCIL_SIGNATURE_KEY}$timestamp"
-                        val signature = RiskAreaReq.getSHA256StrJava(signatureStr).toUpperCase(Locale.ROOT)
+                        val signatureStr = "$timestamp${RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_SIGNATURE_KEY}$timestamp"
+                        val signature = RiskAreaEvent.RiskAreaReq.getSHA256StrJava(signatureStr).toUpperCase(Locale.ROOT)
                         val build = chain.request().newBuilder()
-                            .addHeader("x-wif-nonce", RiskAreaReq.STATE_COUNCIL_X_WIF_NONCE)
-                            .addHeader("x-wif-paasid", RiskAreaReq.STATE_COUNCIL_X_WIF_PAASID)
+                            .addHeader("x-wif-nonce", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_NONCE)
+                            .addHeader("x-wif-paasid", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_PAASID)
                             .addHeader("x-wif-signature", signature)
                             .addHeader("x-wif-timestamp", timestamp.toString())
                             .build()
@@ -148,7 +147,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
                 .build()
                 .create(ApiService::class.java)
             val response = withContext(Dispatchers.IO) {
-                retrofit.getRiskAreaData(RiskAreaReq(timestamp = timestamp)).execute()
+                retrofit.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
             }
             Log.d(TAG, "onResponse: " + response.body())
             if (response.body() == null) return@launch
@@ -176,7 +175,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     }
 
     //开始区域检索
-    private fun startSearchDistrict(area: Area, isHigh: Boolean) {
+    private fun startSearchDistrict(area: RiskAreaEvent.Area, isHigh: Boolean) {
         val districtSearch = DistrictSearch.newInstance()
         mDistrictSearchList.add(districtSearch)
         districtSearch.setOnDistrictSearchListener {
@@ -187,7 +186,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     }
 
     //地区检索结果
-    private fun onSearchResult(result: DistrictResult?, area: Area) {
+    private fun onSearchResult(result: DistrictResult?, area: RiskAreaEvent.Area) {
         mCurrSearchedArea++
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
             return

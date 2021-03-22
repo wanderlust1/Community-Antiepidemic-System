@@ -39,6 +39,8 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var mEtTrueName: TextInputEditText
     private lateinit var mTilCID: TextInputLayout
     private lateinit var mEtCID: TextInputEditText
+    private lateinit var mTilPhone: TextInputLayout
+    private lateinit var mEtPhone: TextInputEditText
     private lateinit var mBtnSignUp: Button
     private lateinit var mRadioGroup: RadioGroup
 
@@ -66,6 +68,8 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
         mTilTrueName  = findViewById(R.id.til_new_true_name)
         mTilCID  = findViewById(R.id.til_new_cid)
         mEtTrueName  = findViewById(R.id.et_new_true_name)
+        mTilPhone  = findViewById(R.id.til_new_phone)
+        mEtPhone  = findViewById(R.id.et_new_phone)
         mEtCID  = findViewById(R.id.et_new_cid)
         mRadioGroup = findViewById(R.id.rg_sign_up_type)
         mBtnSignUp.setOnClickListener {
@@ -79,6 +83,7 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
                     mTilPassword.hint = "密码"
                     mTilTrueName.visibility = View.VISIBLE
                     mTilCID.visibility = View.VISIBLE
+                    mTilPhone.visibility = View.VISIBLE
                 }
                 R.id.rb_sign_up_admin -> {
                     mSelectedType = LoginType.ADMIN
@@ -86,6 +91,7 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
                     mTilPassword.hint = "密码"
                     mTilTrueName.visibility = View.GONE
                     mTilCID.visibility = View.GONE
+                    mTilPhone.visibility = View.GONE
                 }
             }
         }
@@ -133,11 +139,23 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
                 }
             }
         })
+        mEtPhone.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (mEtPhone.text.isNullOrBlank()) {
+                    mTilPhone.error = "手机号码不能为空"
+                } else {
+                    mTilPhone.isErrorEnabled = false
+                }
+            }
+        })
         mSelectedType = LoginType.USER
         mTilUsername.hint = "用户账号"
         mTilPassword.hint = "密码"
         mTilTrueName.hint = "真实姓名"
         mTilCID.hint = "身份证号码"
+        mTilPhone.hint = "手机号码"
     }
 
     private fun onSubmit() {
@@ -145,13 +163,14 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
         val password = mEtPassword.text.toString().trim()
         val cid = mEtCID.text.toString().trim()
         val trueName = mEtTrueName.text.toString().trim()
+        val phone = mEtPhone.text.toString().trim()
         if (id.isNotEmpty() && password.isNotEmpty()) {
             if (mSelectedType == LoginType.ADMIN || (mSelectedType == LoginType.USER
-                        && cid.isNotEmpty() && trueName.isNotEmpty())) {
+                        && cid.isNotEmpty() && trueName.isNotEmpty() && phone.isNotEmpty())) {
                 mDialog.show()
                 mBtnSignUp.isClickable = false
                 //对这个账号密码进行查询
-                requestRegister(id, password, cid, trueName)
+                requestRegister(id, password, cid, trueName, phone)
             }
         }
         mTilUsername.error = "账号不能为空"
@@ -162,9 +181,12 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
         mTilCID.isErrorEnabled = cid.isEmpty()
         mTilTrueName.error = "真实姓名不能为空"
         mTilTrueName.isErrorEnabled = trueName.isEmpty()
+        mTilPhone.error = "手机号码不能为空"
+        mTilPhone.isErrorEnabled = phone.isEmpty()
     }
 
-    private fun requestRegister(id: String, password: String, cid: String = "", trueName: String = "") {
+    private fun requestRegister(id: String, password: String,
+                                cid: String = "", trueName: String = "", phone: String = "") {
         launch {
             val type = mSelectedType
             val retrofit = Retrofit.Builder()
@@ -175,8 +197,7 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = if (type == LoginType.USER) {
-                        val user = User(id, password, trueName, cid)
-                        Log.d("zzz", user.toString())
+                        val user = User(id, password, trueName, cid, phone)
                         UserEvent.RegisterReq(user = user, loginType = type)
                     } else {
                         val admin = Admin(id, password)

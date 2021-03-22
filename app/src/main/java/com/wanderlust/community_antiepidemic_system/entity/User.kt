@@ -14,6 +14,8 @@ data class User (
 
     var cid: String = "", //身份证号
 
+    var phone: String = "", //手机号
+
     var communityId: String = "", //所在社区
 
     var communityName: String = ""
