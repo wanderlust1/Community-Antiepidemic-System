@@ -7,8 +7,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
+import android.util.Log
 import androidx.annotation.DrawableRes
 import com.baidu.location.*
+import com.google.gson.Gson
+import com.tencent.mmkv.MMKV
+import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 object MapUtils {
 
@@ -83,6 +90,36 @@ object MapUtils {
                 activity.requestPermissions(permissionsList.toArray(strings), 0)
             }
         }
+    }
+
+    /**
+     * 将风险地区信息保存至本地，记录时间戳。
+     * 避免频繁请求接口，减小开销
+     */
+    fun saveRiskAreaMMKV(saver: MMKV, result: RiskAreaEvent.RiskAreaRsp?) {
+        if (result == null) return
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(Calendar.getInstance().time)
+        saver.encode("RiskAreaRsp_time", date)
+        saver.encode("RiskAreaRsp_data", Gson().toJson(result))
+        Log.d("RiskAreaRsp", "已缓存至本地，date=${date}")
+    }
+
+    /**
+     * 读取已保存至本地的风险地区信息。避免频繁请求接口，减小开销
+     * （如果上次保存时间距今大于一天，则认为本地信息已过期，需要重新网络请求）
+     */
+    fun readRiskAreaMMKV(reader: MMKV): RiskAreaEvent.RiskAreaRsp? {
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(Calendar.getInstance().time)
+        val oldDate = reader.decodeString("RiskAreaRsp_time")
+        if (oldDate.isNullOrEmpty() || oldDate != date) {
+            return null
+        }
+        val data = reader.decodeString("RiskAreaRsp_data")
+        if (data.isNullOrEmpty()) {
+            return null
+        }
+        Log.d("RiskAreaRsp", "已从本地载入缓存")
+        return Gson().fromJson(data, RiskAreaEvent.RiskAreaRsp::class.java)
     }
 
 }

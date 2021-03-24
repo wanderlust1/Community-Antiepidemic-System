@@ -30,7 +30,7 @@
                 android:id="@+id/main_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="体温登记管理"
+                android:text="健康登记管理"
                 android:textSize="16sp"
                 android:textColor="#fff"
                 android:textStyle="bold"

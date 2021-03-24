@@ -209,7 +209,7 @@
                 android:layout_margin="10dp"
                 android:background="@drawable/bg_white_round_corner"
                 android:clickable="true"
-                android:drawableStart="@drawable/ic_baseline_qr_code_24"
+                android:drawableStart="@drawable/ic_baseline_qr_code_green"
                 android:drawablePadding="12dp"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
@@ -233,7 +233,7 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:padding="13dp"
-                android:text="体温登记"
+                android:text="健康登记"
                 android:textColor="#353535"
                 android:textSize="15sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_home_health_qrcode" />

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_qr_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    android:background="#62ACE4"
+    android:background="@color/qr_code_green"
     tools:context=".activities.qrcode.QRCodeActivity">
 
     <RelativeLayout
@@ -77,7 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.1dp"
             android:background="#BFBFBF"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="15dp"/>
 
         <RelativeLayout
             android:id="@+id/rl_qr_detail"
@@ -85,16 +86,23 @@
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:paddingBottom="10dp">
+            <ImageView
+                android:id="@+id/iv_qr_my_qr_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="18dp"
+                android:src="@drawable/ic_baseline_qr_code_green"/>
             <TextView
+                android:id="@+id/tv_qr_my_qr_msg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="我的健康码信息"
                 android:textColor="#353535"
                 android:textSize="15sp"
-                android:layout_marginStart="18dp"
-                android:drawableStart="@drawable/ic_baseline_qr_code_24"
-                android:drawablePadding="10dp"
-                android:gravity="center" />
+                android:layout_toEndOf="@id/iv_qr_my_qr_msg"
+                android:layout_marginStart="10dp"
+                android:layout_centerVertical="true"/>
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"

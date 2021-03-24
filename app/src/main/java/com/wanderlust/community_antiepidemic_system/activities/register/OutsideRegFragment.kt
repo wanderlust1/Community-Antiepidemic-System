@@ -216,7 +216,7 @@ class OutsideRegFragment : Fragment(), CoroutineScope {
             return
         }
         mOutsideReg.userId = (activity?.application as WanderlustApp).gUser?.userId ?: ""
-        val format = SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale.CHINA)
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
         mOutsideReg.date = format.format(System.currentTimeMillis())
         launch {
             val retrofit = Retrofit.Builder()

@@ -33,7 +33,7 @@ class TemperatureActivity : AppCompatActivity() {
     }
 
     private fun initViewPager() {
-        val titles = arrayOf("体温登记", "体温记录")
+        val titles = arrayOf("健康登记", "健康登记记录")
         val fragments: MutableList<Fragment> = ArrayList()
         fragments.add(TemperRegFragment.newInstance())
         fragments.add(TemperRecordFragment.newInstance())

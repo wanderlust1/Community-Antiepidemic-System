@@ -20,6 +20,7 @@ import com.baidu.mapapi.search.district.DistrictSearch
 import com.baidu.mapapi.search.district.DistrictSearchOption
 import com.baidu.mapapi.search.poi.*
 import com.baidu.mapapi.utils.SpatialRelationUtil
+import com.tencent.mmkv.MMKV
 import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
@@ -33,6 +34,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.ConnectException
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
@@ -121,38 +123,53 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     private fun startNetworkRequest() {
         mJob = Job()
         launch {
-            //获得当前时间戳
-            val timestamp = System.currentTimeMillis() / 1000
-            //封装Header数据
-            val client = withContext(Dispatchers.IO) {
-                OkHttpClient.Builder().addInterceptor(object : Interceptor {
-                    override fun intercept(chain: Interceptor.Chain): Response {
-                        val signatureStr = "$timestamp${RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_SIGNATURE_KEY}$timestamp"
-                        val signature = RiskAreaEvent.RiskAreaReq.getSHA256StrJava(signatureStr).toUpperCase(Locale.ROOT)
-                        val build = chain.request().newBuilder()
-                            .addHeader("x-wif-nonce", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_NONCE)
-                            .addHeader("x-wif-paasid", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_PAASID)
-                            .addHeader("x-wif-signature", signature)
-                            .addHeader("x-wif-timestamp", timestamp.toString())
-                            .build()
-                        return chain.proceed(build)
+            val kv = MMKV.defaultMMKV()
+            val localResult = MapUtils.readRiskAreaMMKV(kv)
+            val result = if (localResult != null) {
+                localResult
+            } else {
+                //获得当前时间戳
+                val timestamp = System.currentTimeMillis() / 1000
+                //封装Header数据
+                val client = withContext(Dispatchers.IO) {
+                    OkHttpClient.Builder().addInterceptor(object : Interceptor {
+                        override fun intercept(chain: Interceptor.Chain): Response {
+                            val signatureStr = "$timestamp${RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_SIGNATURE_KEY}$timestamp"
+                            val signature = RiskAreaEvent.RiskAreaReq.getSHA256StrJava(signatureStr).toUpperCase(Locale.ROOT)
+                            val build = chain.request().newBuilder()
+                                .addHeader("x-wif-nonce", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_NONCE)
+                                .addHeader("x-wif-paasid", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_PAASID)
+                                .addHeader("x-wif-signature", signature)
+                                .addHeader("x-wif-timestamp", timestamp.toString())
+                                .build()
+                            return chain.proceed(build)
+                        }
+                    }).retryOnConnectionFailure(true).build()
+                }
+                //创建发送请求
+                val retrofit = Retrofit.Builder()
+                    .baseUrl(UrlUtils.AREA_DATA_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client)
+                    .build()
+                    .create(ApiService::class.java)
+                val response = try {
+                    withContext(Dispatchers.IO) {
+                        retrofit.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
                     }
-                }).retryOnConnectionFailure(true).build()
+                } catch (e: ConnectException) {
+                    R.string.connection_error.toast(this@MapActivity)
+                    null
+                } catch (e: Exception) {
+                    R.string.timeout_error.toast(this@MapActivity)
+                    null
+                }
+                Log.d(TAG, "onResponse: " + response?.body())
+                if (response?.body() == null) return@launch
+                //处理结果
+                MapUtils.saveRiskAreaMMKV(kv, response.body())
+                response.body()!!
             }
-            //创建发送请求
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.AREA_DATA_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build()
-                .create(ApiService::class.java)
-            val response = withContext(Dispatchers.IO) {
-                retrofit.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
-            }
-            Log.d(TAG, "onResponse: " + response.body())
-            if (response.body() == null) return@launch
-            //处理结果
-            val result = response.body()!!
             mTotalAreaCount = result.data.highCount + result.data.midCount
             isStartSearch = true
             mDangerAreaView.setData(result.data.highList, result.data.midList) { area ->

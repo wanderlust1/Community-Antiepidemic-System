@@ -20,6 +20,7 @@ import com.wanderlust.community_antiepidemic_system.entity.TemperReg
 import com.wanderlust.community_antiepidemic_system.event.CommunityEvent
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
 import com.wanderlust.community_antiepidemic_system.network.ApiService
+import com.wanderlust.community_antiepidemic_system.utils.HealthType
 import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
@@ -44,6 +45,10 @@ class TemperRegFragment : Fragment(), CoroutineScope {
     private lateinit var mRbApproach1: MaterialRadioButton
     private lateinit var mRbApproach2: MaterialRadioButton
     private lateinit var mRbApproach3: MaterialRadioButton
+    private lateinit var mRgDiagnose: RadioGroup
+    private lateinit var mRbDiagnose1: MaterialRadioButton
+    private lateinit var mRbDiagnose2: MaterialRadioButton
+    private lateinit var mRbDiagnose3: MaterialRadioButton
     private lateinit var mBtnSubmit: Button
 
     private val mTemperReg = TemperReg()
@@ -64,6 +69,10 @@ class TemperRegFragment : Fragment(), CoroutineScope {
             mRbApproach2  = findViewById(R.id.rb_temper_approach_2)
             mRbApproach3  = findViewById(R.id.rb_temper_approach_3)
             mBtnSubmit    = findViewById(R.id.btn_temp_reg_submit)
+            mRgDiagnose   = findViewById(R.id.rg_temper_diagnose)
+            mRbDiagnose1  = findViewById(R.id.rb_temper_diagnose_1)
+            mRbDiagnose2  = findViewById(R.id.rb_temper_diagnose_2)
+            mRbDiagnose3  = findViewById(R.id.rb_temper_diagnose_3)
         }
     }
 
@@ -71,9 +80,16 @@ class TemperRegFragment : Fragment(), CoroutineScope {
         super.onActivityCreated(savedInstanceState)
         mRgApproach.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rb_temper_approach_1 -> mTemperReg.approach = mRbApproach1.text.toString()
-                R.id.rb_temper_approach_2 -> mTemperReg.approach = mRbApproach2.text.toString()
-                R.id.rb_temper_approach_3 -> mTemperReg.approach = mRbApproach3.text.toString()
+                R.id.rb_temper_approach_1 -> mTemperReg.approach = HealthType.APPROACH_SUSPECT
+                R.id.rb_temper_approach_2 -> mTemperReg.approach = HealthType.APPROACH_DIAGNOSE
+                R.id.rb_temper_approach_3 -> mTemperReg.approach = HealthType.APPROACH_NONE
+            }
+        }
+        mRgDiagnose.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rb_temper_diagnose_1 -> mTemperReg.diagnose = HealthType.DIAGNOSE
+                R.id.rb_temper_diagnose_2 -> mTemperReg.diagnose = HealthType.SUSPECT
+                R.id.rb_temper_diagnose_3 -> mTemperReg.diagnose = HealthType.NONE
             }
         }
         mBtnSubmit.setOnClickListener {
@@ -90,7 +106,8 @@ class TemperRegFragment : Fragment(), CoroutineScope {
             append(if (mCbState5.isChecked) "${mCbState5.text} " else "")
         }.trim()
         mTemperReg.temper = mEtTemper.text.toString()
-        if (mTemperReg.temper.isEmpty() || mTemperReg.status.isEmpty() || mTemperReg.approach.isEmpty()) {
+        if (mTemperReg.temper.isEmpty() || mTemperReg.status.isEmpty() ||
+            mTemperReg.approach == 0 || mTemperReg.diagnose == 0) {
             "请完整填写表单".toast(activity)
             return
         }
@@ -105,7 +122,7 @@ class TemperRegFragment : Fragment(), CoroutineScope {
         }
         mTemperReg.temper = mTemperReg.temper.toFloat().toString()
         mTemperReg.userId = (activity?.application as WanderlustApp).gUser?.userId ?: ""
-        val format = SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale.CHINA)
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
         mTemperReg.date = format.format(System.currentTimeMillis())
         launch {
             val retrofit = Retrofit.Builder()

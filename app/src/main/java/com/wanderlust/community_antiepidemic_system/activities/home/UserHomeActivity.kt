@@ -24,6 +24,7 @@ import com.wanderlust.community_antiepidemic_system.activities.search.SearchComm
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.DiseaseDataEvent
 import com.wanderlust.community_antiepidemic_system.network.ApiService
+import com.wanderlust.community_antiepidemic_system.utils.DialogUtils
 import com.wanderlust.community_antiepidemic_system.utils.MapUtils
 import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
@@ -115,7 +116,11 @@ class UserHomeActivity : AppCompatActivity(), CoroutineScope {
             startActivity(Intent(this, MapActivity::class.java))
         }
         mTvQRCode.setOnClickListener {
-            startActivity(Intent(this, QRCodeActivity::class.java))
+            if ((application as WanderlustApp).gUser?.communityId.isNullOrEmpty()) {
+                DialogUtils(this, "使用健康二维码功能之前，你必须先加入一个社区。").show()
+            } else {
+                startActivity(Intent(this, QRCodeActivity::class.java))
+            }
         }
         mTvTemperature.setOnClickListener {
             startActivity(Intent(this, TemperatureActivity::class.java))

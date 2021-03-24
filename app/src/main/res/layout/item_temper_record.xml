@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bg_red_round_corner"
     android:layout_marginBottom="10dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
@@ -28,7 +29,8 @@
         android:textColor="#F1F1F1"
         android:layout_marginLeft="15dp"
         app:layout_constraintLeft_toRightOf="@id/tv_item_temper_temper"
-        app:layout_constraintBaseline_toBaselineOf="@id/tv_item_temper_temper"
+        app:layout_constraintTop_toTopOf="@id/tv_item_temper_temper"
+        app:layout_constraintBottom_toBottomOf="@id/tv_item_temper_temper"
         android:textSize="14sp"/>
 
     <ImageView
@@ -61,7 +63,7 @@
         android:src="@drawable/ic_baseline_arrow_right_24"/>
 
     <TextView
-        android:id="@+id/tv_item_temper_approach"
+        android:id="@+id/tv_item_temper_diagnose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxWidth="270dp"
@@ -70,6 +72,26 @@
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="@id/iv_item_temper_2"
         app:layout_constraintLeft_toRightOf="@id/iv_item_temper_2"/>
+
+    <ImageView
+        android:id="@+id/iv_item_temper_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_temper_diagnose"
+        android:src="@drawable/ic_baseline_arrow_right_24"/>
+
+    <TextView
+        android:id="@+id/tv_item_temper_approach"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="270dp"
+        android:textColor="#fff"
+        android:layout_marginTop="2dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="@id/iv_item_temper_3"
+        app:layout_constraintLeft_toRightOf="@id/iv_item_temper_3"/>
 
     <ImageView
         android:id="@+id/iv_item_temper_icon"

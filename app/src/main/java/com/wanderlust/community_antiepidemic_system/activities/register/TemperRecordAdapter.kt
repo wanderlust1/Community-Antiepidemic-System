@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.entity.TemperReg
+import com.wanderlust.community_antiepidemic_system.utils.HealthType
 
 class TemperRecordAdapter: RecyclerView.Adapter<TemperRecordAdapter.ViewHolder>() {
 
@@ -39,8 +40,9 @@ class TemperRecordAdapter: RecyclerView.Adapter<TemperRecordAdapter.ViewHolder>(
         )
         holder.temper?.text = "${item.temper}°C"
         holder.date?.text = item.date
-        holder.status?.text = "健康状态：${item.status}"
-        holder.approach?.text = "近期${item.approach}"
+        holder.status?.text = if (item.status.contains("正常")) item.status else "健康状态：${item.status}"
+        holder.approach?.text = HealthType.toString(item.approach)
+        holder.diagnose?.text = HealthType.toString(item.diagnose)
     }
 
     override fun getItemCount(): Int = mList.size
@@ -50,12 +52,14 @@ class TemperRecordAdapter: RecyclerView.Adapter<TemperRecordAdapter.ViewHolder>(
         var date: TextView? = null
         var status: TextView? = null
         var approach: TextView? = null
+        var diagnose: TextView? = null
         var icon: ImageView? = null
         init {
             temper = itemView.findViewById(R.id.tv_item_temper_temper)
             date = itemView.findViewById(R.id.tv_item_temper_date)
             status = itemView.findViewById(R.id.tv_item_temper_status)
             approach = itemView.findViewById(R.id.tv_item_temper_approach)
+            diagnose = itemView.findViewById(R.id.tv_item_temper_diagnose)
             icon = itemView.findViewById(R.id.iv_item_temper_icon)
         }
     }

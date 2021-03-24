@@ -80,6 +80,17 @@
                 android:textSize="14sp" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cb_temper_state_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="健康状态正常"
+                android:textStyle="bold"
+                android:theme="@style/CheckBox"
+                app:useMaterialThemeColors="false" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/cb_temper_state_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -119,16 +130,60 @@
                 android:theme="@style/CheckBox"
                 app:useMaterialThemeColors="false" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/cb_temper_state_5"
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_temper_diagnose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/bg_white_round_corner"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:text="是否被确诊为新冠肺炎病例："
+                android:textStyle="bold"
+                android:textColor="#353535"
+                android:textSize="14sp" />
+
+            <RadioGroup
+                android:id="@+id/rg_temper_diagnose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:text="健康状态正常"
-                android:theme="@style/CheckBox"
-                app:useMaterialThemeColors="false" />
+                android:layout_marginTop="10dp">
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_temper_diagnose_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="未被确诊"
+                    android:textStyle="bold"
+                    android:buttonTint="@color/colorPrimary"/>
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_temper_diagnose_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="确诊病例"
+                    android:layout_marginTop="10dp"
+                    android:buttonTint="@color/colorPrimary"/>
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_temper_diagnose_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="疑似病例"
+                    android:buttonTint="@color/colorPrimary"/>
+            </RadioGroup>
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/ll_temper_approach"
@@ -159,10 +214,11 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp">
                 <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rb_temper_approach_1"
+                    android:id="@+id/rb_temper_approach_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="接触过疑似病例"
+                    android:text="未接触过疑似或确诊病例"
+                    android:textStyle="bold"
                     android:buttonTint="@color/colorPrimary"/>
                 <com.google.android.material.radiobutton.MaterialRadioButton
                     android:id="@+id/rb_temper_approach_2"
@@ -172,11 +228,11 @@
                     android:text="接触过确诊病例"
                     android:buttonTint="@color/colorPrimary"/>
                 <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rb_temper_approach_3"
+                    android:id="@+id/rb_temper_approach_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="未接触过疑似或确诊病例"
+                    android:text="接触过疑似病例"
                     android:buttonTint="@color/colorPrimary"/>
             </RadioGroup>
         </LinearLayout>

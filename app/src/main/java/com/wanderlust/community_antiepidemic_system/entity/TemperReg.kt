@@ -10,7 +10,9 @@ data class TemperReg (
 
     var status: String = "",
 
-    var approach: String = "",
+    var approach: Int = 0,
+
+    var diagnose: Int = 0,
 
     var isDanger: Boolean = false
 

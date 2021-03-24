@@ -59,4 +59,8 @@ interface ApiService {
     @POST("addOutsideReg")
     fun addOutsideReg(@Body body: RequestBody): Call<RegEvent.AddOutsideRecordRsp>
 
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("getQRContent")
+    fun getQRContent(@Body body: RequestBody): Call<QRCodeEvent.QRContentRsp>
+
 }
