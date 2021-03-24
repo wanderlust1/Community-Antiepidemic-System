@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="20dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingBottom="20dp"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_dialog_round">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_qr_detail_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="韩金龙"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="#000"/>
+        <TextView
+            android:id="@+id/tv_qr_detail_cid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="150****052 / 11**************44"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#CCCCCC"
+        android:layout_marginTop="15dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_qr_detail_temper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="最近体温记录：36.4°C"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tv_qr_detail_diagnose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:text="未被确诊"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            android:layout_marginLeft="-8dp"
+            android:drawableLeft="@drawable/ic_baseline_arrow_right_black"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/tv_qr_detail_approach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:text="近期未接触过疑似或确诊病例"
+            android:layout_marginTop="5dp"
+            android:textSize="14sp"
+            android:layout_marginLeft="-8dp"
+            android:drawableLeft="@drawable/ic_baseline_arrow_right_black"
+            android:gravity="center_vertical"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#CCCCCC"
+        android:layout_marginTop="15dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_qr_detail_outside_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="最近一个月外出记录"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tv_qr_detail_outside"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:text="山西省 太原市 小店区, 浙江省 杭州市 余杭区, 广东省 广州市 从化市, 广东省 梅州市 梅江区, 北京市 北京市 丰台区, 黑龙江省 哈尔滨市 松北区, 北京市 北京市 东城区"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            android:gravity="center_vertical"/>
+    </LinearLayout>
+
+</LinearLayout>
