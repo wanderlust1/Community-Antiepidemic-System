@@ -19,7 +19,6 @@ data class QRCodeMessage (
         const val RED_DIAGNOSE = 11
         const val RED_ENTER_HIGH_RISK = 12
         const val RED_ENTER_MID_RISK = 14
-
         const val YELLOW_ENTER_MID_RISK = 15
         const val YELLOW_FEVER = 16
     }

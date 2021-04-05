@@ -1,6 +1,5 @@
 package com.wanderlust.community_antiepidemic_system.activities.qrcode
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -9,7 +8,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
@@ -18,13 +16,13 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
-import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.entity.QRCodeMessage
 import com.wanderlust.community_antiepidemic_system.entity.QRContent
 import com.wanderlust.community_antiepidemic_system.event.QRCodeEvent
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
+import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.utils.*
 import kotlinx.coroutines.*
 import okhttp3.Interceptor

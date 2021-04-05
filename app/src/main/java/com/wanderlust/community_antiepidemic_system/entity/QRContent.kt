@@ -34,6 +34,8 @@ data class Content(
 
     var phone: String = "",
 
+    var time: String = "",
+
     var encode: String = ""
 
 )

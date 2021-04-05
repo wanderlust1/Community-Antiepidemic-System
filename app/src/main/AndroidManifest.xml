@@ -20,14 +20,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityAntiepidemicSystem"
         tools:targetApi="n">
+        <activity android:name=".activities.notice.EditNoticeActivity"
+            android:theme="@style/Theme.PrimaryStatusBg"/>
+        <activity
+            android:name=".activities.notice.NoticeListActivity"
+            android:theme="@style/Theme.PrimaryStatusBg" />
+        <activity
+            android:name=".activities.community.CreateCommunityActivity"
+            android:theme="@style/Theme.PrimaryStatusBg" />
+        <activity
+            android:name=".activities.home.AdminHomeActivity"
+            android:theme="@style/Theme.WhiteStatusText" />
         <activity
             android:name=".activities.register.OutsideActivity"
-            android:theme="@style/Theme.PrimaryStatusBg"/>
+            android:theme="@style/Theme.PrimaryStatusBg" />
         <activity
             android:name=".activities.register.TemperatureActivity"
             android:theme="@style/Theme.PrimaryStatusBg" />
         <activity
-            android:name=".activities.search.SearchCommunityActivity"
+            android:name=".activities.community.SearchCommunityActivity"
             android:theme="@style/Theme.PrimaryStatusBg" />
         <activity
             android:name=".activities.home.UserHomeActivity"

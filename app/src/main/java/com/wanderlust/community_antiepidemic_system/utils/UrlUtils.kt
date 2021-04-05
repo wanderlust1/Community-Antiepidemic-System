@@ -3,7 +3,7 @@ package com.wanderlust.community_antiepidemic_system.utils
 object UrlUtils {
 
     //后台服务器URL
-    const val SERVICE_URL = "http://192.168.205.66:8080/wanderlust-cas-service/"
+    const val SERVICE_URL = "http://192.168.43.13:8080/wanderlust-cas-service/"
 
     //疫情统计数据的URL
     const val STATIC_DATA_URL = "https://ncovdata.market.alicloudapi.com/"

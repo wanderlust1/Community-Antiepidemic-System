@@ -2,6 +2,12 @@ package com.wanderlust.community_antiepidemic_system.event
 
 interface BusEvent {
 
-    data class OnCommunityChange(val newCommunityName: String, val newCommunityId: String)
+    class OnCommunityChange
+
+    class OnAdminCommunityChange
+
+    data class NoReadCountChange(val noReadCount: Int)
+
+    class NoticeListUpdate
 
 }

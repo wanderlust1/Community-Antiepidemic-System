@@ -1,41 +1,35 @@
-package com.wanderlust.community_antiepidemic_system.activities.register
+package com.wanderlust.community_antiepidemic_system.activities.home
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.utils.ViewPagerAdapter
 
-class OutsideActivity : AppCompatActivity() {
+class AdminHomeActivity : AppCompatActivity() {
 
     private lateinit var mTabLayout: TabLayout
     private lateinit var mViewPager: ViewPager
-    private lateinit var mIvBack: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_outside)
+        setContentView(R.layout.activity_admin_home)
         initView()
     }
 
     private fun initView() {
-        mTabLayout = findViewById(R.id.tab_outside)
-        mViewPager = findViewById(R.id.vp_outside)
-        mIvBack = findViewById(R.id.iv_outside_back)
-        mIvBack.setOnClickListener {
-            finish()
-        }
+        mTabLayout = findViewById(R.id.tab_home_admin)
+        mViewPager = findViewById(R.id.vp_home_admin)
         initViewPager()
     }
 
     private fun initViewPager() {
-        val titles = arrayOf("外出登记", "外出记录")
+        val titles = arrayOf("概览", "用户管理")
         val fragments: MutableList<Fragment> = ArrayList()
-        fragments.add(OutsideRegFragment.newInstance())
-        fragments.add(OutsideRecordFragment.newInstance())
+        fragments.add(AdminOverviewFragment.newInstance())
+        fragments.add(AdminUserListFragment.newInstance())
         mViewPager.adapter = ViewPagerAdapter(supportFragmentManager, fragments, titles)
         mTabLayout.setupWithViewPager(mViewPager)
     }

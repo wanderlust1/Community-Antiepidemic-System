@@ -169,7 +169,7 @@ class OutsideRegFragment : Fragment(), CoroutineScope {
         val startDate = format.parse(start)
         val endDate = format.parse(end)
         if (startDate?.after(endDate) == true) {
-            "出发时间不能晚于返回时间".toast(activity)
+            "手机号码格式错误".toast(activity)
             return false
         }
         return true

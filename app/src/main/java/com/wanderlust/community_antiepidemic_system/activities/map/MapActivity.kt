@@ -164,18 +164,38 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
                     R.string.timeout_error.toast(this@MapActivity)
                     null
                 }
-                Log.d(TAG, "onResponse: " + response?.body())
                 if (response?.body() == null) return@launch
                 //处理结果
                 MapUtils.saveRiskAreaMMKV(kv, response.body())
                 response.body()!!
             }
-            mTotalAreaCount = result.data.highCount + result.data.midCount
+            /*val result = RiskAreaEvent.RiskAreaRsp(RiskAreaEvent.RiskAreaData().apply {
+                time = "2021-02-16 15时"
+                highCount = 3
+                midCount = 5
+                highList = mutableListOf(
+                    RiskAreaEvent.Area("吉林省", "通化市", "东昌区", ("光明街光复社区华翔雍和苑小区，民主街江南社区波尔多小镇小区，民主街自由自宅小区，" +
+                            "民主街丽江社区厚德载物B区，民主街民强社区中房花园小区，龙泉街龙兴社区康馨园3期龙泉街龙水社区大禹康城小区，新站街新兴社区中安欣盛A区，" +
+                            "新站街富通1号楼，新站街东庆社区外贸亿德C区新站街靖宇社区怡星园小区新站街胜利社区公用事业局家属楼，新站街新山社区银都府邸小区，" +
+                            "团结街建和社区东华小区，团结街新风社区农行60户楼，团结街东岭社区东正奥园小区").split("，").toMutableList()),
+                    RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "利民开发区", ("裕田街道").split("，").toMutableList()),
+                    RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "呼兰区", ("兰河街道").split("，").toMutableList())
+                )
+                midList = mutableListOf(
+                    RiskAreaEvent.Area("上海市", "上海市", "浦东新区", mutableListOf("高东镇新高苑一期小区")),
+                    RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "呼兰区", ("建设路街道").split("，").toMutableList()),
+                    RiskAreaEvent.Area("黑龙江省", "绥化市", "望奎县", ("").split("，").toMutableList()),
+                    RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "道外区", ("永源镇").split("，").toMutableList()),
+                    RiskAreaEvent.Area("黑龙江省", "石家庄市", "藁城区", ("").split("，").toMutableList())
+                )
+            })*/
+            Log.d("zzz", result.toString())
+            mTotalAreaCount = result.data.highList.size + result.data.midList.size
             isStartSearch = true
             mDangerAreaView.setData(result.data.highList, result.data.midList) { area ->
                 //将地图移动至该风险地区
-                val builder = LatLngBounds.Builder().include(area.position)
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(builder.build(), 0, 600, 0, 0))
+                val status = MapStatus.Builder().target(area.position).zoom(12f).build()
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(status))
             }
             mDangerAreaView.updateFooter("数据来源：卫生健康委（${result.data.time}）")
             if (mTotalAreaCount <= 0) {

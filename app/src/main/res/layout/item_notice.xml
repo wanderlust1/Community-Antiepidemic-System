@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:paddingTop="15dp"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tv_item_notice_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="北京市地区人员登记"
+        android:textSize="16sp"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="15dp">
+
+        <TextView
+            android:id="@+id/tv_item_notice_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发布于 2021-4-5 13:00:00"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tv_item_notice_register_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="健康登记提醒"
+            android:background="@drawable/bg_tag_register_alert"
+            android:textColor="#fff"
+            android:textSize="10dp"
+            android:paddingRight="6dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_item_notice_no_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未读"
+            android:textSize="10sp"
+            android:textColor="#fff"
+            android:paddingRight="6dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:visibility="gone"
+            android:background="@drawable/bg_tag_no_read"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_item_notice_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已读"
+            android:textSize="10sp"
+            android:textColor="#fff"
+            android:paddingRight="6dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:background="@drawable/bg_tag_read"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_item_read_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="16人已读"
+            android:textSize="10sp"
+            android:textColor="#fff"
+            android:paddingRight="6dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:background="@drawable/bg_tag_read"
+            android:layout_marginLeft="10dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_item_notice_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="5月30日（含）以来有到过北京市与上述地区人员有过接触的人员请于6月17日17点前与社区管理办公室联系，电话：2782158（82158）。"
+        android:textSize="14sp"
+        android:textColor="#000"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"/>
+
+    <TextView
+        android:id="@+id/tv_item_notice_to_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="点击前往健康登记"
+        android:textSize="14sp"
+        android:textColor="@color/colorPrimary"
+        android:drawableLeft="@drawable/ic_baseline_arrow_right_blue"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="15dp"
+        android:gravity="center_vertical"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#CDCDCD"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"/>
+
+</LinearLayout>

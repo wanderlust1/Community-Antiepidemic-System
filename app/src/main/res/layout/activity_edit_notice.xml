@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F6F6F6"
+    tools:context=".activities.notice.EditNoticeActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:id="@+id/iv_notice_edit_back"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginStart="20dp"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_baseline_arrow_back_ios_24" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="编辑社区公告"
+            android:textSize="16sp"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/iv_notice_edit_back"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/tv_notice_edit_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="15dp"
+            android:text="发布"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:textColor="#fff"/>
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="15dp"
+                android:background="@drawable/bg_white_round_corner">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp">
+                    <EditText
+                        android:id="@+id/et_notice_edit_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="90dp"
+                        android:hint="编辑公告标题"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:maxLength="30"
+                        android:maxLines="2"
+                        android:gravity="center_vertical"
+                        android:layout_gravity="center_vertical"
+                        android:background="@null"/>
+                    <TextView
+                        android:id="@+id/tv_notice_edit_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="普通公告"
+                        android:background="@drawable/bg_tag_read"
+                        android:textColor="#fff"
+                        android:textSize="12sp"
+                        android:paddingRight="6dp"
+                        android:paddingLeft="6dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:layout_gravity="center_vertical|end" />
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="#CDCDCD"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"/>
+
+
+                <EditText
+                    android:id="@+id/et_notice_edit_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="编辑公告内容"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="15dp"
+                    android:textSize="15sp"
+                    android:textColor="#000"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:minHeight="250dp"
+                    android:gravity="top|start"
+                    android:background="@null"/>
+
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp">
+                    <TextView
+                        android:id="@+id/tv_notice_edit_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#ACACAC"/>
+                    <TextView
+                        android:id="@+id/tv_notice_edit_word_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:layout_gravity="end"
+                        android:textColor="#ACACAC"/>
+                </FrameLayout>
+            </LinearLayout>
+        </FrameLayout>
+    </ScrollView>
+</LinearLayout>

@@ -43,6 +43,8 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/iv_item_danger_area_point"
             android:layout_below="@id/tv_item_danger_area_city_name"
+            android:maxLines="3"
+            android:ellipsize="end"
             android:textColor="#BEFFFFFF"
             android:textSize="12sp"/>
     </RelativeLayout>

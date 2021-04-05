@@ -60,7 +60,31 @@ interface ApiService {
     fun addOutsideReg(@Body body: RequestBody): Call<RegEvent.AddOutsideRecordRsp>
 
     @Headers("Content-Type: application/json", "Accept: application/json")
-    @POST("getQRContent")
+    @POST("requestQRContent")
     fun getQRContent(@Body body: RequestBody): Call<QRCodeEvent.QRContentRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("createCommunity")
+    fun createCommunity(@Body body: RequestBody): Call<CommunityEvent.CreateCommunityRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("adminBindCommunity")
+    fun adminBindCommunity(@Body body: RequestBody): Call<CommunityEvent.AdminBindCommunityRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("addNotice")
+    fun addNotice(@Body body: RequestBody): Call<NoticeEvent.AddNoticeRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("setNoticeRead")
+    fun setNoticeRead(@Body body: RequestBody): Call<NoticeEvent.SetNoticeReadRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("getNoticesList")
+    fun getNoticesList(@Body body: RequestBody): Call<NoticeEvent.GetNoticesListRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("getNoReadCount")
+    fun getNoReadCount(@Body body: RequestBody): Call<NoticeEvent.GetNoReadCountRsp>
 
 }

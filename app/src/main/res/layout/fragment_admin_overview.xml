@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F6F6F6">
+
+    <TextView
+        android:id="@+id/tv_admin_my_community"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_white_round_corner"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_baseline_home_24"
+        android:drawablePadding="12dp"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:textColor="#353535"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_admin_notification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_white_round_corner"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_baseline_notifications_c"
+        android:drawablePadding="12dp"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:text="公告和提醒"
+        android:textColor="#353535"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pie_chart"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</LinearLayout>

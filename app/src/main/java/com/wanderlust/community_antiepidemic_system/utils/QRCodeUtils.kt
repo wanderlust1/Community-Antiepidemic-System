@@ -24,7 +24,7 @@ object QRCodeUtils {
      */
     fun createQRCode(content: String, @ColorRes color: Int, context: Context): ByteArray {
         val length = DensityUtils.dp2px(context, 220f)
-        val bitmap = QRCodeUtils.createQRCodeBitmap(content, length, length, ContextCompat.getColor(context, color))
+        val bitmap = createQRCodeBitmap(content, length, length, ContextCompat.getColor(context, color))
         val stream = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
         return stream.toByteArray()

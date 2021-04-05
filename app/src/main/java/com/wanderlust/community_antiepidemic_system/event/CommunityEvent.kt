@@ -11,12 +11,20 @@ interface CommunityEvent {
         const val CHANGE = 12   //更改已选择的社区
     }
 
-    data class SearchReq(val keywords: String, val userId: String)
+    data class SearchReq(val keywords: String, val id: String, val loginType: Int)
 
     data class SearchRsp(val code: Int, val result: List<Community> = mutableListOf())
 
     data class JoinReq(val userId: String, val oldCommunityId: String = "", val newCommunityId: String, val type: Int)
 
     data class JoinRsp(val code: Int, val msg: String)
+
+    data class CreateCommunityReq(val community: Community, val adminId: String)
+
+    data class CreateCommunityRsp(val communityId: String, val code: Int, val msg: String)
+
+    data class AdminBindCommunityReq(val adminId: String, val newCommunityId: String)
+
+    data class AdminBindCommunityRsp(val code: Int, val msg: String)
 
 }

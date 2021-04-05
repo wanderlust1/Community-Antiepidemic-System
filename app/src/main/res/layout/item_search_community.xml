@@ -44,7 +44,6 @@
         android:id="@+id/tv_isc_joined_tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="已加入"
         android:textSize="10sp"
         android:textColor="#EFEFEF"
         android:paddingTop="3dp"

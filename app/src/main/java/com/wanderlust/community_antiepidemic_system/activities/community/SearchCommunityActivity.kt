@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.activities.search
+package com.wanderlust.community_antiepidemic_system.activities.community
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -16,12 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
+import com.wanderlust.community_antiepidemic_system.entity.Admin
 import com.wanderlust.community_antiepidemic_system.entity.Community
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.CommunityEvent
 import com.wanderlust.community_antiepidemic_system.network.ApiService
-import com.wanderlust.community_antiepidemic_system.utils.DialogUtils
+import com.wanderlust.community_antiepidemic_system.utils.LoginType
 import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
@@ -42,14 +43,14 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var mBtnClear: ImageView
     private lateinit var mRvResult: RecyclerView
 
-    private val mAdapter: SearchAdapter by lazy { SearchAdapter() }
-
     private val mJob: Job by lazy { Job() }
     override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
 
-    private val mUser: User? by lazy {
-        (application as WanderlustApp).gUser
-    }
+    private val mType: Int     by lazy { (application as WanderlustApp).gType }
+    private val mUser: User?   by lazy { (application as WanderlustApp).gUser }
+    private val mAdmin: Admin? by lazy { (application as WanderlustApp).gAdmin }
+
+    private val mAdapter: SearchAdapter by lazy { SearchAdapter(mType) }
 
     private var mKeywords = ""
 
@@ -101,32 +102,8 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
         showSoftKeyboard()
     }
 
-    private fun showJoinDialog(community: Community) {
-        val user = mUser ?: return
-        val message = if (user.communityId.isEmpty()) {
-            "是否加入${community.name}？"
-        } else {
-            "当前已在${user.communityName}，是否修改你的社区为${community.name}？"
-        }
-        AlertDialog.Builder(this)
-            .setMessage(message)
-            .setPositiveButton("确定") { dialog, _ ->
-                if (user.communityId.isEmpty()) {
-                    requestJoinCommunity(user.userId, community.id, community.name)
-                } else {
-                    requestJoinCommunity(user.userId, community.id, community.name, user.communityId)
-                }
-                dialog.dismiss()
-            }
-            .setNegativeButton("取消") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
-    }
-
     private fun requestSearch() {
-        if (mKeywords.isEmpty()) return
+        if (mKeywords.isEmpty() || mType == 0) return
         launch {
             val retrofit = Retrofit.Builder()
                 .baseUrl(UrlUtils.SERVICE_URL)
@@ -135,7 +112,8 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
                 .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
-                    val request = CommunityEvent.SearchReq(mKeywords, mUser?.userId ?: "")
+                    val id = if (mType == LoginType.USER) mUser?.userId else mAdmin?.adminId
+                    val request = CommunityEvent.SearchReq(mKeywords, id ?: "", mType)
                     retrofit.searchCommunity(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
@@ -157,7 +135,7 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private fun requestJoinCommunity(userId: String, newId: String, newName: String, oldId: String? = null) {
+    private fun requestUserJoinCommunity(userId: String, newId: String, newName: String, oldId: String? = null) {
         launch {
             val retrofit = Retrofit.Builder()
                 .baseUrl(UrlUtils.SERVICE_URL)
@@ -186,9 +164,79 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
                 mUser?.communityId = newId
                 mUser?.communityName = newName
                 requestSearch() //目的是更新搜索列表
-                EventBus.getDefault().post(BusEvent.OnCommunityChange(newName, newId)) //通知home
+                EventBus.getDefault().post(BusEvent.OnCommunityChange()) //通知home
             }
         }
+    }
+
+    private fun requestAdminBindCommunity(adminId: String, newId: String, newName: String) {
+        launch {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(UrlUtils.SERVICE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService::class.java)
+            val response = try {
+                withContext(Dispatchers.IO) {
+                    val request = CommunityEvent.AdminBindCommunityReq(adminId, newId)
+                    retrofit.adminBindCommunity(Gson().toJson(request).toRequestBody()).execute()
+                }
+            } catch (e: ConnectException) {
+                R.string.connection_error.toast(this@SearchCommunityActivity)
+                null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                R.string.timeout_error.toast(this@SearchCommunityActivity)
+                null
+            }
+            Log.d(TAG, response?.body().toString())
+            if (response?.body() == null) return@launch
+            val result = response.body()!!
+            result.msg.toast(this@SearchCommunityActivity)
+            if (result.code == CommunityEvent.SUCC) {
+                mAdmin?.communityId = newId
+                mAdmin?.communityName = newName
+                requestSearch() //目的是更新搜索列表
+                EventBus.getDefault().post(BusEvent.OnAdminCommunityChange()) //通知home
+            }
+        }
+    }
+
+
+    private fun showJoinDialog(community: Community) {
+        if (mType == 0) return
+        val user  = (application as WanderlustApp).gUser  ?: User()
+        val admin = (application as WanderlustApp).gAdmin ?: Admin()
+        val message = if (mType == LoginType.USER) {
+            if (user.communityId.isEmpty()) {
+                "是否加入${community.name}？"
+            } else {
+                "当前已在${user.communityName}，是否修改你的社区为${community.name}？"
+            }
+        } else {
+            if (admin.communityId.isEmpty()) {
+                "是否绑定${community.name}？"
+            } else {
+                "当前已在${admin.communityName}，是否改绑你的社区为${community.name}？"
+            }
+        }
+        AlertDialog.Builder(this)
+            .setMessage(message)
+            .setPositiveButton("确定") { dialog, _ ->
+                if (mType == LoginType.ADMIN) {
+                    requestAdminBindCommunity(admin.adminId, community.id, community.name)
+                } else if (mType == LoginType.USER && user.communityId.isEmpty()) {
+                    requestUserJoinCommunity(user.userId, community.id, community.name)
+                } else if (mType == LoginType.USER) {
+                    requestUserJoinCommunity(user.userId, community.id, community.name, user.communityId)
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("取消") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
     private fun showSoftKeyboard() {

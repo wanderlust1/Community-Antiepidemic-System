@@ -15,9 +15,7 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.gson.Gson
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
-import com.wanderlust.community_antiepidemic_system.activities.search.SearchCommunityActivity
 import com.wanderlust.community_antiepidemic_system.entity.TemperReg
-import com.wanderlust.community_antiepidemic_system.event.CommunityEvent
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
 import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.utils.HealthType
@@ -27,7 +25,6 @@ import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.StringBuilder
 import java.net.ConnectException
 import java.text.SimpleDateFormat
 import java.util.*

@@ -10,6 +10,7 @@
         android:id="@+id/srl_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -39,23 +40,48 @@
 
                     <ImageView
                         android:id="@+id/iv_home_self"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="12dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_baseline_person_24" />
 
-                    <ImageView
-                        android:id="@+id/iv_home_notification"
-                        android:layout_width="21dp"
-                        android:layout_height="21dp"
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_marginEnd="15dp"
                         android:layout_toStartOf="@id/iv_home_self"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_baseline_notifications_24" />
+                        android:layout_marginEnd="10dp">
+                        <ImageView
+                            android:id="@+id/iv_home_notification"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_baseline_notifications_24"
+                            android:layout_margin="5dp"/>
+                        <FrameLayout
+                            android:id="@+id/fl_home_no_read"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_gravity="top|right"
+                            android:visibility="gone">
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_red_point"/>
+                            <TextView
+                                android:id="@+id/tv_home_red_point"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="1"
+                                android:textColor="#fff"
+                                android:textStyle="bold"
+                                android:textSize="9sp"
+                                android:gravity="center"/>
+                        </FrameLayout>
+                    </FrameLayout>
                 </RelativeLayout>
             </FrameLayout>
 
@@ -182,7 +208,6 @@
                     android:drawableStart="@drawable/ic_baseline_home_24"
                     android:drawablePadding="12dp"
                     android:gravity="center_vertical"
-                    android:text="广东外语外贸大学南苑13栋"
                     android:textColor="#353535"
                     android:textSize="15sp"
                     android:textStyle="bold" />

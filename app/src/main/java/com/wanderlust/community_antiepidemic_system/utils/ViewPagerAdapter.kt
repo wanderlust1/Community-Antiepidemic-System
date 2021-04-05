@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.activities.register
+package com.wanderlust.community_antiepidemic_system.utils
 
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment

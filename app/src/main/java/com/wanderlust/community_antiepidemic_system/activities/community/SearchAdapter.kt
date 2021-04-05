@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.activities.search
+package com.wanderlust.community_antiepidemic_system.activities.community
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,8 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.entity.Community
+import com.wanderlust.community_antiepidemic_system.utils.LoginType
 
-class SearchAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SearchAdapter(private var mType: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val TYPE_ERROR = 0
     private val TYPE_NORMAL = 1
@@ -46,7 +47,7 @@ class SearchAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_search_community, parent, false)
             ViewHolder(view)
         } else {
-            val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_search_empty, parent, false)
+            val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_empty, parent, false)
             EmptyViewHolder(view)
         }
     }
@@ -58,6 +59,7 @@ class SearchAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             holder.address?.text = item.location
             holder.count?.text = "${item.count}人"
             holder.tag?.visibility = if (item.hasJoined == 1) View.VISIBLE else View.GONE
+            holder.tag?.text = if (mType == LoginType.USER) "已加入" else "已绑定"
             holder.view.setOnClickListener {
                 mListener?.invoke(item)
             }
@@ -93,8 +95,8 @@ class SearchAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var message: TextView? = null
         var icon: ImageView? = null
         init {
-            message = itemView.findViewById(R.id.tv_empty_search)
-            icon = itemView.findViewById(R.id.iv_empty_search)
+            message = itemView.findViewById(R.id.tv_empty)
+            icon = itemView.findViewById(R.id.iv_empty)
         }
     }
 

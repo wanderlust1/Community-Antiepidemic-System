@@ -4,14 +4,16 @@ import com.google.gson.annotations.SerializedName
 
 data class Community (
 
-    @SerializedName("community_id") val id: String = "",
+    @SerializedName("community_id") var id: String = "",
 
-    @SerializedName("community_name") val name: String = "",
+    @SerializedName("community_name") var name: String = "",
 
-    @SerializedName("menber_count") val count: Int = 0,
+    @SerializedName("menber_count") var count: Int = 0,
 
-    val location: String = "",
+    var location: String = "",
 
-    val hasJoined: Int = 0 //0为当前用户未加入此社区，1为已加入
+    var phone: String = "",
+
+    var hasJoined: Int = 0 //0为当前用户未加入此社区，1为已加入
 
 )

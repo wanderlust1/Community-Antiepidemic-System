@@ -14,6 +14,7 @@ import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.utils.LoginType
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
+import com.wanderlust.community_antiepidemic_system.activities.home.AdminHomeActivity
 import com.wanderlust.community_antiepidemic_system.entity.Admin
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.UserEvent
@@ -168,14 +169,16 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
             result.msg.toast(this@LoginActivity)
             if (result.code == UserEvent.SUCC) {
                 val app = application as WanderlustApp
+                app.gType = type
                 if (type == LoginType.USER) {
                     app.gUser = result.user
-                } else if (type == LoginType.USER)  {
+                    startActivity(Intent(this@LoginActivity, UserHomeActivity::class.java))
+                    finish()
+                } else if (type == LoginType.ADMIN)  {
                     app.gAdmin = result.admin
+                    startActivity(Intent(this@LoginActivity, AdminHomeActivity::class.java))
+                    finish()
                 }
-                app.gType = type
-                startActivity(Intent(this@LoginActivity, UserHomeActivity::class.java))
-                finish()
             }
         }
     }

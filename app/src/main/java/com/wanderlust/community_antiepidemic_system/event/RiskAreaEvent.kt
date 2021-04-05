@@ -82,25 +82,25 @@ interface RiskAreaEvent {
 
     data class RiskAreaRsp (
 
-        val data: RiskAreaData,
+        var data: RiskAreaData,
 
-        val code: String = "",
+        var code: String = "",
 
-        val msg: String = ""
+        var msg: String = ""
 
     )
 
     data class RiskAreaData (
 
-        @SerializedName("end_update_time") val time: String = "",
+        @SerializedName("end_update_time") var time: String = "",
 
-        @SerializedName("hcount") val highCount: Int = 0,
+        @SerializedName("hcount") var highCount: Int = 0,
 
-        @SerializedName("mcount") val midCount: Int = 0,
+        @SerializedName("mcount") var midCount: Int = 0,
 
-        @SerializedName("highlist") val highList: MutableList<Area> = mutableListOf(),
+        @SerializedName("highlist") var highList: MutableList<Area> = mutableListOf(),
 
-        @SerializedName("middlelist") val midList: MutableList<Area> = mutableListOf()
+        @SerializedName("middlelist") var midList: MutableList<Area> = mutableListOf()
 
     )
 

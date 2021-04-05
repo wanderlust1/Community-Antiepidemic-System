@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    android:background="@color/qr_code_green"
     tools:context=".activities.qrcode.QRCodeActivity">
 
     <RelativeLayout
@@ -88,11 +87,10 @@
             android:paddingBottom="10dp">
             <ImageView
                 android:id="@+id/iv_qr_my_qr_msg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="18dp"
-                android:src="@drawable/ic_baseline_qr_code_green"/>
+                android:layout_marginStart="18dp"/>
             <TextView
                 android:id="@+id/tv_qr_my_qr_msg"
                 android:layout_width="wrap_content"
