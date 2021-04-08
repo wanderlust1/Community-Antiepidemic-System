@@ -7,39 +7,36 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.baidu.mapapi.map.MapStatusUpdateFactory
-import com.baidu.mapapi.model.LatLngBounds
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
-import com.wanderlust.community_antiepidemic_system.activities.map.MapActivity
 import com.wanderlust.community_antiepidemic_system.entity.OutSideReg
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
-import com.wanderlust.community_antiepidemic_system.network.ApiService
-import com.wanderlust.community_antiepidemic_system.utils.DensityUtils
-import com.wanderlust.community_antiepidemic_system.utils.MapUtils
-import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
+import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.utils.CommonUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 class OutsideRecordFragment : Fragment(), CoroutineScope {
 
+    private var mUserId = ""
+
     private lateinit var mRefreshLayout: SwipeRefreshLayout
     private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mTvNoData: TextView
 
     private val mAdapter = OutsideRecordAdapter()
 
@@ -48,10 +45,16 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
     private val mJob: Job by lazy { Job() }
     override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mUserId = arguments?.getString(USER_ID) ?: ""
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_outside_record, container, false).apply {
             mRefreshLayout = findViewById(R.id.srl_outside_record)
             mRecyclerView = findViewById(R.id.rv_outside_record)
+            mTvNoData = findViewById(R.id.tv_outside_record_no_data)
         }
     }
 
@@ -62,7 +65,7 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
         mRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                 if (parent.getChildAdapterPosition(view) == 0 && activity != null) {
-                    outRect.top = DensityUtils.dp2px(activity!!, 10f)
+                    outRect.top = CommonUtils.dp2px(activity!!, 10f)
                 }
             }
         })
@@ -73,17 +76,14 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
     }
 
     private fun requestData() {
-        val id = (activity?.application as WanderlustApp).gUser?.userId ?: return
+        val id = if (mUserId.isNotEmpty()) mUserId else {
+            (activity?.application as WanderlustApp).gUser?.userId ?: return
+        }
         launch {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = RegEvent.GetOutSideRecordReq(id)
-                    retrofit.getOutsideRecord(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.getOutsideRecord(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(activity)
@@ -97,17 +97,24 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
             mRefreshLayout.isRefreshing = false
             if (response?.body() == null) return@launch
             val result = response.body()!!
-            mRecordList.clear()
-            mRecordList.addAll(result.list)
-            mAdapter.update(mRecordList)
-            requestRiskAreaData()
+            if (result.list.isEmpty()) {
+                mTvNoData.visibility = View.VISIBLE
+                mRecyclerView.visibility = View.GONE
+            } else {
+                mTvNoData.visibility = View.GONE
+                mRecyclerView.visibility = View.VISIBLE
+                mRecordList.clear()
+                mRecordList.addAll(result.list)
+                mAdapter.update(mRecordList)
+                requestRiskAreaData()
+            }
         }
     }
 
     private fun requestRiskAreaData() {
         launch {
             val kv = MMKV.defaultMMKV()
-            val localResult = MapUtils.readRiskAreaMMKV(kv)
+            val localResult = CommonUtils.readRiskAreaMMKV(kv)
             val result = if (localResult != null) {
                 localResult
             } else {
@@ -129,15 +136,9 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
                         }
                     }).retryOnConnectionFailure(true).build()
                 }
-                val retrofit = Retrofit.Builder()
-                    .baseUrl(UrlUtils.AREA_DATA_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client)
-                    .build()
-                    .create(ApiService::class.java)
                 val response = try {
                     withContext(Dispatchers.IO) {
-                        retrofit.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
+                        Service.areaData.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
                     }
                 } catch (e: ConnectException) {
                     R.string.connection_error.toast(activity)
@@ -148,7 +149,7 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
                 }
                 Log.d(TAG, "onResponse: " + response?.body())
                 if (response?.body() == null) return@launch
-                MapUtils.saveRiskAreaMMKV(kv, response.body())
+                CommonUtils.saveRiskAreaMMKV(kv, response.body())
                 response.body()!!
             }
             val areas = mutableListOf<String>()
@@ -177,7 +178,12 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
 
     companion object {
         const val TAG = "OutsideRecordFragment"
-        @JvmStatic fun newInstance() = OutsideRecordFragment()
+        private const val USER_ID = "USER_ID"
+        @JvmStatic fun newInstance(userId: String = "") = OutsideRecordFragment().apply {
+            arguments = Bundle().apply {
+                putString(USER_ID, userId)
+            }
+        }
     }
 
 }

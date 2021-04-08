@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.baidu.location.BDAbstractLocationListener
@@ -21,19 +20,16 @@ import com.baidu.mapapi.search.district.DistrictSearchOption
 import com.baidu.mapapi.search.poi.*
 import com.baidu.mapapi.utils.SpatialRelationUtil
 import com.tencent.mmkv.MMKV
-import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
-import com.wanderlust.community_antiepidemic_system.utils.MapUtils
-import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
+import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.utils.CommonUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import com.wanderlust.community_antiepidemic_system.widget.DangerAreaView
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -61,9 +57,9 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     //地点/区域检索
     private val mDistrictSearchList = mutableListOf<DistrictSearch>()
     private val mPoiSearch: PoiSearch by lazy {
-        val poiSearch = PoiSearch.newInstance()
-        poiSearch.setOnGetPoiSearchResultListener(this)
-        poiSearch
+        PoiSearch.newInstance().apply {
+            setOnGetPoiSearchResultListener(this@MapActivity)
+        }
     }
 
     private var mTotalAreaCount = 0   //待搜索的地区总数
@@ -79,9 +75,9 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        MapUtils.requestPermission(this)
+        CommonUtils.requestPermission(this)
         initView()
-        MapUtils.startOneLocation(mLocationClient, mOneLocationListener)
+        CommonUtils.startOneLocation(mLocationClient, mOneLocationListener)
         startNetworkRequest()
     }
 
@@ -101,7 +97,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
             val markerOptions = MarkerOptions()
             markerOptions.position(latLng)
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(
-                MapUtils.drawBitmapFromVector(this@MapActivity, R.drawable.ic_baseline_location_on_24_blue)))
+                CommonUtils.drawBitmapFromVector(this@MapActivity, R.drawable.ic_baseline_location_on_24_blue)))
             markerOptions.zIndex(9)
             mOneLocMarker = mBaiduMap.addOverlay(markerOptions) as Marker
             val builder = LatLngBounds.Builder().include(latLng)
@@ -112,7 +108,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
                     location.locType == BDLocation.TypeNetWorkLocation ||
                     location.locType == BDLocation.TypeOffLineLocation
             judgementDangerZone()
-            MapUtils.formatLocType(location.locType).toast(this@MapActivity)
+            CommonUtils.formatLocType(location.locType).toast(this@MapActivity)
         }
     }
 
@@ -124,7 +120,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
         mJob = Job()
         launch {
             val kv = MMKV.defaultMMKV()
-            val localResult = MapUtils.readRiskAreaMMKV(kv)
+            val localResult = CommonUtils.readRiskAreaMMKV(kv)
             val result = if (localResult != null) {
                 localResult
             } else {
@@ -147,15 +143,9 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
                     }).retryOnConnectionFailure(true).build()
                 }
                 //创建发送请求
-                val retrofit = Retrofit.Builder()
-                    .baseUrl(UrlUtils.AREA_DATA_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client)
-                    .build()
-                    .create(ApiService::class.java)
                 val response = try {
                     withContext(Dispatchers.IO) {
-                        retrofit.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
+                        Service.areaData.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
                     }
                 } catch (e: ConnectException) {
                     R.string.connection_error.toast(this@MapActivity)
@@ -166,7 +156,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
                 }
                 if (response?.body() == null) return@launch
                 //处理结果
-                MapUtils.saveRiskAreaMMKV(kv, response.body())
+                CommonUtils.saveRiskAreaMMKV(kv, response.body())
                 response.body()!!
             }
             /*val result = RiskAreaEvent.RiskAreaRsp(RiskAreaEvent.RiskAreaData().apply {
@@ -259,7 +249,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
         if (poiInfos.isEmpty()) return
         val poiInfo = poiInfos.iterator().next()
         val markerOptions = MarkerOptions().position(poiInfo.getLocation()).icon(
-            BitmapDescriptorFactory.fromBitmap(MapUtils.drawBitmapFromVector(
+            BitmapDescriptorFactory.fromBitmap(CommonUtils.drawBitmapFromVector(
                 this@MapActivity, R.drawable.ic_baseline_location_on_24_red
             )))
         val textView = TextView(this)

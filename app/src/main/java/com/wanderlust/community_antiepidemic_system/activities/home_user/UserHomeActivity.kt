@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.activities.home
+package com.wanderlust.community_antiepidemic_system.activities.home_user
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -30,7 +30,7 @@ import com.wanderlust.community_antiepidemic_system.event.DiseaseDataEvent
 import com.wanderlust.community_antiepidemic_system.event.NoticeEvent
 import com.wanderlust.community_antiepidemic_system.network.Service
 import com.wanderlust.community_antiepidemic_system.utils.DialogUtils
-import com.wanderlust.community_antiepidemic_system.utils.MapUtils
+import com.wanderlust.community_antiepidemic_system.utils.CommonUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import com.wanderlust.community_antiepidemic_system.widget.DiseaseStatsView
 import kotlinx.coroutines.*
@@ -38,7 +38,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.lang.Integer.max
 import java.net.ConnectException
 
 class UserHomeActivity : BaseActivity() {
@@ -189,7 +188,7 @@ class UserHomeActivity : BaseActivity() {
                 it.childStatistic.contains(
                     kv.decodeString(resources.getString(R.string.mmkv_def_loc_province), "error"))
             })
-            MapUtils.startOneLocation(mLocationClient, mLocationListener)
+            CommonUtils.startOneLocation(mLocationClient, mLocationListener)
         }
     }
 

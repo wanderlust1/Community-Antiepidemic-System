@@ -1,5 +1,6 @@
 package com.wanderlust.community_antiepidemic_system.activities.notice
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.CountDownTimer
 import android.text.Editable
@@ -15,6 +16,7 @@ import com.wanderlust.community_antiepidemic_system.entity.Notice
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.NoticeEvent
 import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.utils.addLimitTextWatcher
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,6 +55,7 @@ class EditNoticeActivity : BaseActivity() {
         mEtContent = findViewById(R.id.et_notice_edit_content)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun initView() {
         mCountDownTimer.start()
         mTvType.setOnClickListener {
@@ -65,7 +68,9 @@ class EditNoticeActivity : BaseActivity() {
                 }
             }.create().show()
         }
-        mEtContent.addTextChangedListener(mLimitTextWatcher)
+        mEtContent.addLimitTextWatcher(MAX_CONTENT_LEN) {
+            mTvWordCount.text = "$it/$MAX_CONTENT_LEN"
+        }
         mTvWordCount.text = "0/$MAX_CONTENT_LEN"
         findViewById<ImageView>(R.id.iv_notice_edit_back).setOnClickListener {
             finish()
@@ -122,33 +127,6 @@ class EditNoticeActivity : BaseActivity() {
             mTvDate.text = date
         }
 
-    }
-
-    private val mLimitTextWatcher =  object: TextWatcher {
-
-        private var limit = MAX_CONTENT_LEN
-        private var cursor = 0
-        private var beforeLength = 0
-
-        override fun beforeTextChanged (s: CharSequence, start: Int, count: Int, after: Int) {
-            beforeLength = s.length
-        }
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            cursor = start
-        }
-
-        override fun afterTextChanged(s: Editable) {
-            val afterLength = s.length
-            if (afterLength > limit) {
-                val inputNum = afterLength - beforeLength
-                val start = cursor + (inputNum - afterLength + limit)
-                val end   = cursor + inputNum
-                mEtContent.setText(s.delete(start, end).toString())
-                mEtContent.setSelection(start)
-            }
-            mTvWordCount.text = "${afterLength.coerceAtMost(limit)}/$limit"
-        }
     }
 
     override fun onDestroy() {

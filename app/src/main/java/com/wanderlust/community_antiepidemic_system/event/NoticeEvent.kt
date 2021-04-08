@@ -25,4 +25,8 @@ interface NoticeEvent {
 
     data class SetNoticeReadRsp(val noReadCount: Int, val code: Int, val msg: String)
 
+    data class DeleteNoticeReq(val noticeId: String)
+
+    data class DeleteNoticeRsp(val code: Int, val msg: String)
+
 }

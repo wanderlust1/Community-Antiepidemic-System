@@ -56,6 +56,17 @@ class NoticeListActivity : BaseActivity() {
                     .create()
                     .show()
             }
+            setLongClickListener {
+                if (mType == LoginType.USER) return@setLongClickListener
+                AlertDialog.Builder(this@NoticeListActivity)
+                    .setTitle(null)
+                    .setMessage("确定删除要此公告吗？")
+                    .setPositiveButton("确定") { _, _ ->
+                        requestDeleteNotice(it.id)
+                    }.setNegativeButton("取消") { _, _ -> }
+                    .create()
+                    .show()
+            }
         }
     }
 
@@ -142,7 +153,6 @@ class NoticeListActivity : BaseActivity() {
                 R.string.timeout_error.toast(this@NoticeListActivity)
                 null
             }
-            mSrlNotice.isRefreshing = false
             Log.d(TAG, response?.body().toString())
             if (response?.body() == null) return@launch
             val result = response.body()!!
@@ -150,6 +160,32 @@ class NoticeListActivity : BaseActivity() {
             if (result.code == NoticeEvent.SUCC) {
                 requestNoticeList()
                 EventBus.getDefault().post(BusEvent.NoReadCountChange(result.noReadCount))
+            }
+        }
+    }
+
+    //标为已读
+    private fun requestDeleteNotice(noticeId: String) {
+        launch {
+            val response = try {
+                withContext(Dispatchers.IO) {
+                    val request = NoticeEvent.DeleteNoticeReq(noticeId)
+                    Service.request.deleteNotice(Gson().toJson(request).toRequestBody()).execute()
+                }
+            } catch (e: ConnectException) {
+                R.string.connection_error.toast(this@NoticeListActivity)
+                null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                R.string.timeout_error.toast(this@NoticeListActivity)
+                null
+            }
+            Log.d(TAG, response?.body().toString())
+            if (response?.body() == null) return@launch
+            val result = response.body()!!
+            result.msg.toast(this@NoticeListActivity)
+            if (result.code == NoticeEvent.SUCC) {
+                requestNoticeList()
             }
         }
     }

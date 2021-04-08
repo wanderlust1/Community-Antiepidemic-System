@@ -1,6 +1,7 @@
 package com.wanderlust.community_antiepidemic_system.activities.register
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,13 +34,15 @@ class TemperRecordAdapter: RecyclerView.Adapter<TemperRecordAdapter.ViewHolder>(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mList[position]
         holder.itemView.background = mContext?.getDrawable(
-            if (item.isDanger) R.drawable.bg_red_round_corner else R.drawable.bg_green_round_corner
+            if (item.isDanger) R.drawable.bg_red_round_corner_stroke else R.drawable.bg_green_round_corner_stroke
         )
         holder.icon?.setImageResource(
-            if (item.isDanger) R.drawable.ic_baseline_priority_high_24 else R.drawable.ic_baseline_done_24
+            if (item.isDanger) R.drawable.ic_baseline_priority_high_red else R.drawable.ic_baseline_done_green
         )
         holder.temper?.text = "${item.temper}°C"
+        holder.temper?.setTextColor(Color.parseColor(if (item.isDanger) "#E37B7B" else "#9BE187"))
         holder.date?.text = item.date
+        holder.date?.setTextColor(Color.parseColor(if (item.isDanger) "#E37B7B" else "#9BE187"))
         holder.status?.text = if (item.status.contains("正常")) item.status else "健康状态：${item.status}"
         holder.approach?.text = HealthType.toString(item.approach)
         holder.diagnose?.text = HealthType.toString(item.diagnose)

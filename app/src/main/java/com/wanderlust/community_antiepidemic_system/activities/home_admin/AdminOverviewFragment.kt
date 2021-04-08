@@ -1,7 +1,6 @@
-package com.wanderlust.community_antiepidemic_system.activities.home
+package com.wanderlust.community_antiepidemic_system.activities.home_admin
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -18,7 +17,6 @@ import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.activities.community.CreateCommunityActivity
 import com.wanderlust.community_antiepidemic_system.activities.community.SearchCommunityActivity
-import com.wanderlust.community_antiepidemic_system.activities.notice.EditNoticeActivity
 import com.wanderlust.community_antiepidemic_system.activities.notice.NoticeListActivity
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import kotlinx.coroutines.CoroutineScope

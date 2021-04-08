@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3A93E1</color>
+    <color name="colorAccent">#3A93E1</color>
     <color name="purple_200">#3A93E1</color>
     <color name="purple_500">#3A93E1</color>
     <color name="purple_700">#3A93E1</color>

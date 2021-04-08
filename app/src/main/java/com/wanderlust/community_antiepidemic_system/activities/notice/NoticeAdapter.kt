@@ -1,7 +1,6 @@
 package com.wanderlust.community_antiepidemic_system.activities.notice
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wanderlust.community_antiepidemic_system.R
-import com.wanderlust.community_antiepidemic_system.entity.Admin
 import com.wanderlust.community_antiepidemic_system.entity.Notice
 import com.wanderlust.community_antiepidemic_system.utils.LoginType
 
@@ -22,8 +20,9 @@ class NoticeAdapter(private val mType: Int): RecyclerView.Adapter<RecyclerView.V
 
     private var mMessage = ""
 
-    private var mListener: ((Notice) -> Unit)? = null
+    private var mClickListener: ((Notice) -> Unit)? = null
     private var mJumpListener: (() -> Unit)? = null
+    private var mLongClickListener: ((Notice) -> Unit)? = null
 
     private var mContext: Context? = null
 
@@ -39,11 +38,15 @@ class NoticeAdapter(private val mType: Int): RecyclerView.Adapter<RecyclerView.V
     }
 
     fun setOnItemClickListener(listener: (Notice) -> Unit) {
-        mListener = listener
+        mClickListener = listener
     }
 
     fun setJumpListener(listener: () -> Unit) {
         mJumpListener = listener
+    }
+
+    fun setLongClickListener(listener: (Notice) -> Unit) {
+        mLongClickListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -88,7 +91,11 @@ class NoticeAdapter(private val mType: Int): RecyclerView.Adapter<RecyclerView.V
             holder.readCount?.visibility = if (mType == LoginType.ADMIN) View.VISIBLE else View.GONE
             holder.readCount?.text = "${item.readCount}人已读"
             holder.itemView.setOnClickListener {
-                mListener?.invoke(item)
+                mClickListener?.invoke(item)
+            }
+            holder.itemView.setOnLongClickListener {
+                mLongClickListener?.invoke(item)
+                false
             }
         } else if (holder is EmptyViewHolder) {
             holder.message?.text = mMessage

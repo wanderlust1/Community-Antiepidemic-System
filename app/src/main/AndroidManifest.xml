@@ -20,8 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityAntiepidemicSystem"
         tools:targetApi="n">
-        <activity android:name=".activities.notice.EditNoticeActivity"
-            android:theme="@style/Theme.PrimaryStatusBg"/>
+        <activity
+            android:name=".activities.register.AdminRegRecordActivity"
+            android:theme="@style/Theme.PrimaryStatusBg" />
+        <activity
+            android:name=".activities.notice.EditNoticeActivity"
+            android:theme="@style/Theme.PrimaryStatusBg" />
         <activity
             android:name=".activities.notice.NoticeListActivity"
             android:theme="@style/Theme.PrimaryStatusBg" />
@@ -29,7 +33,7 @@
             android:name=".activities.community.CreateCommunityActivity"
             android:theme="@style/Theme.PrimaryStatusBg" />
         <activity
-            android:name=".activities.home.AdminHomeActivity"
+            android:name=".activities.home_admin.AdminHomeActivity"
             android:theme="@style/Theme.WhiteStatusText" />
         <activity
             android:name=".activities.register.OutsideActivity"
@@ -41,7 +45,7 @@
             android:name=".activities.community.SearchCommunityActivity"
             android:theme="@style/Theme.PrimaryStatusBg" />
         <activity
-            android:name=".activities.home.UserHomeActivity"
+            android:name=".activities.home_user.UserHomeActivity"
             android:theme="@style/Theme.WhiteStatusText" />
         <activity
             android:name=".activities.login.LoginActivity"

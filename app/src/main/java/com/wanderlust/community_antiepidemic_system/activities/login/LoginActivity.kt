@@ -1,36 +1,27 @@
 package com.wanderlust.community_antiepidemic_system.activities.login
 
 import android.content.Intent
-import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
-import com.wanderlust.community_antiepidemic_system.network.ApiService
-import com.wanderlust.community_antiepidemic_system.utils.LoginType
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
-import com.wanderlust.community_antiepidemic_system.activities.home.AdminHomeActivity
+import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
+import com.wanderlust.community_antiepidemic_system.activities.home_admin.AdminHomeActivity
 import com.wanderlust.community_antiepidemic_system.entity.Admin
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.UserEvent
-import com.wanderlust.community_antiepidemic_system.activities.home.UserHomeActivity
-import com.wanderlust.community_antiepidemic_system.utils.DialogUtils
-import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
-import com.wanderlust.community_antiepidemic_system.utils.toast
+import com.wanderlust.community_antiepidemic_system.activities.home_user.UserHomeActivity
+import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.utils.*
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
 import java.net.ConnectException
-import kotlin.coroutines.CoroutineContext
 
-class LoginActivity : AppCompatActivity(), CoroutineScope {
+class LoginActivity : BaseActivity() {
 
     companion object {
         const val TAG = "LoginActivity"
@@ -51,17 +42,9 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
 
     private val mDialog: DialogUtils by lazy { DialogUtils(this) }
 
-    //协程
-    private val mJob: Job by lazy { Job() }
-    override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
+    override fun contentView() = R.layout.activity_login
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-        initView()
-    }
-    
-    private fun initView() {
+    override fun findView() {
         mTilUsername = findViewById(R.id.til_username)
         mTilPassword = findViewById(R.id.til_password)
         mTieUser = findViewById(R.id.et_user)
@@ -71,6 +54,9 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
         mRadioGroup = findViewById(R.id.rg_login_type)
         mRbUser = findViewById(R.id.rb_login_user)
         mRbAdmin = findViewById(R.id.rb_login_admin)
+    }
+
+    override fun initView() {
         mBtnSubmit.setOnClickListener {
             onSubmit()
         }
@@ -91,28 +77,8 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
                 }
             }
         }
-        mTieUser.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (mTieUser.text.isNullOrBlank()) {
-                    mTilUsername.error = "账号不能为空"
-                } else {
-                    mTilUsername.isErrorEnabled = false
-                }
-            }
-        })
-        mTiePassword.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (mTiePassword.text.isNullOrBlank()) {
-                    mTilPassword.error = "账号不能为空"
-                } else {
-                    mTilPassword.isErrorEnabled = false
-                }
-            }
-        })
+        mTieUser.addErrorTextWatcher(mTilUsername, "账号不能为空")
+        mTiePassword.addErrorTextWatcher(mTilPassword, "账号不能为空")
         mSelectedType = LoginType.USER
         mTilUsername.hint = "用户账号"
         mTilPassword.hint = "密码"
@@ -137,11 +103,6 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
     private fun requestLogin(id: String, password: String) {
         launch {
             val type = mSelectedType
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = if (type == LoginType.USER) {
@@ -151,7 +112,7 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
                         val admin = Admin(adminId = id, password = password)
                         UserEvent.LoginReq(admin = admin, loginType = type)
                     }
-                    retrofit.login(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.login(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@LoginActivity)
@@ -199,11 +160,6 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
                 mTilPassword.isErrorEnabled = false
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mJob.cancel()
     }
 
 }

@@ -21,10 +21,12 @@ interface UserEvent {
 
     data class RegisterRsp(val code: Int, val msg: String)
 
-    data class UploadImageRsp(val code: Int)
+    data class GetCommunityUsersReq(val communityId: String)
 
-    data class ModifyInfoReq(val id: String, val newValue: String)
+    data class GetCommunityUsersRsp(val result: List<User>)
 
-    data class ModifyInfoRsp(val code: Int)
+    data class KickUserReq(val userId: String, var communityId: String)
+
+    data class KickUserRsp(val code: Int, val msg: String)
 
 }

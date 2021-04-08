@@ -13,14 +13,13 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.wanderlust.community_antiepidemic_system.network.ApiService
-import com.wanderlust.community_antiepidemic_system.utils.LoginType
 import com.wanderlust.community_antiepidemic_system.R
+import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
 import com.wanderlust.community_antiepidemic_system.entity.Admin
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.UserEvent
-import com.wanderlust.community_antiepidemic_system.utils.DialogUtils
-import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
-import com.wanderlust.community_antiepidemic_system.utils.toast
+import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.utils.*
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Retrofit
@@ -29,7 +28,7 @@ import java.lang.Exception
 import java.net.ConnectException
 import kotlin.coroutines.CoroutineContext
 
-class SignUpActivity : AppCompatActivity(), CoroutineScope {
+class SignUpActivity : BaseActivity() {
 
     private lateinit var mTilUsername: TextInputLayout
     private lateinit var mEtUser: TextInputEditText
@@ -49,17 +48,9 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
     /** 登录进度条  */
     private val mDialog: DialogUtils by lazy { DialogUtils(this) }
 
-    //协程
-    private val mJob: Job by lazy { Job() }
-    override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
+    override fun contentView() = R.layout.activity_sign_up
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_up)
-        initView()
-    }
-
-    private fun initView() {
+    override fun findView() {
         mEtUser  = findViewById(R.id.et_new_user)
         mEtPassword =  findViewById(R.id.et_new_password)
         mBtnSignUp  = findViewById(R.id.btn_sign_up)
@@ -72,6 +63,9 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
         mEtPhone  = findViewById(R.id.et_new_phone)
         mEtCID  = findViewById(R.id.et_new_cid)
         mRadioGroup = findViewById(R.id.rg_sign_up_type)
+    }
+
+    override fun initView() {
         mBtnSignUp.setOnClickListener {
             onSubmit()
         }
@@ -95,61 +89,11 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
                 }
             }
         }
-        mEtUser.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (mEtUser.text.isNullOrBlank()) {
-                    mTilUsername.error = "账号不能为空"
-                } else {
-                    mTilUsername.isErrorEnabled = false
-                }
-            }
-        })
-        mEtPassword.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (mEtPassword.text.isNullOrBlank()) {
-                    mTilPassword.error = "密码不能为空"
-                } else {
-                    mTilPassword.isErrorEnabled = false
-                }
-            }
-        })
-        mEtCID.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (mEtCID.text.isNullOrBlank()) {
-                    mTilCID.error = "身份证号码不能为空"
-                } else {
-                    mTilCID.isErrorEnabled = false
-                }
-            }
-        })
-        mEtTrueName.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (mEtTrueName.text.isNullOrBlank()) {
-                    mTilTrueName.error = "真实姓名不能为空"
-                } else {
-                    mTilTrueName.isErrorEnabled = false
-                }
-            }
-        })
-        mEtPhone.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (mEtPhone.text.isNullOrBlank()) {
-                    mTilPhone.error = "手机号码不能为空"
-                } else {
-                    mTilPhone.isErrorEnabled = false
-                }
-            }
-        })
+        mEtUser.addErrorTextWatcher(mTilUsername, "账号不能为空")
+        mEtPassword.addErrorTextWatcher(mTilPassword, "密码不能为空")
+        mEtCID.addErrorTextWatcher(mTilCID, "身份证号码不能为空")
+        mEtTrueName.addErrorTextWatcher(mTilTrueName, "真实姓名不能为空")
+        mEtPhone.addErrorTextWatcher(mTilPhone, "手机号码不能为空")
         mSelectedType = LoginType.USER
         mTilUsername.hint = "用户账号"
         mTilPassword.hint = "密码"
@@ -189,11 +133,6 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
                                 cid: String = "", trueName: String = "", phone: String = "") {
         launch {
             val type = mSelectedType
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = if (type == LoginType.USER) {
@@ -203,7 +142,7 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
                         val admin = Admin(id, password)
                         UserEvent.RegisterReq(admin = admin, loginType = type)
                     }
-                    retrofit.register(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.register(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@SignUpActivity)
@@ -228,11 +167,6 @@ class SignUpActivity : AppCompatActivity(), CoroutineScope {
                 finish()
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mJob.cancel()
     }
 
 }

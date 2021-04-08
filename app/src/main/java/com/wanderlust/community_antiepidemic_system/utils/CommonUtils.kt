@@ -17,7 +17,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-object MapUtils {
+object CommonUtils {
+
+    fun dp2px(context: Context, dpValue: Float): Int {
+        return (dpValue * context.resources.displayMetrics.density + 0.5f).toInt()
+    }
 
     fun formatLocType(type: Int): String {
         when (type) {

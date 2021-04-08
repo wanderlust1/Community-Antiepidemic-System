@@ -23,7 +23,7 @@ object QRCodeUtils {
      * 将Bitmap二维码转为ByteArray
      */
     fun createQRCode(content: String, @ColorRes color: Int, context: Context): ByteArray {
-        val length = DensityUtils.dp2px(context, 220f)
+        val length = CommonUtils.dp2px(context, 220f)
         val bitmap = createQRCodeBitmap(content, length, length, ContextCompat.getColor(context, color))
         val stream = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)

@@ -1,6 +1,6 @@
 package com.wanderlust.community_antiepidemic_system.activities.qrcode
 
-import android.os.Bundle
+import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
@@ -18,13 +17,17 @@ import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
+import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
 import com.wanderlust.community_antiepidemic_system.entity.QRCodeMessage
 import com.wanderlust.community_antiepidemic_system.entity.QRContent
 import com.wanderlust.community_antiepidemic_system.event.QRCodeEvent
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
 import com.wanderlust.community_antiepidemic_system.network.ApiService
+import com.wanderlust.community_antiepidemic_system.network.Service
 import com.wanderlust.community_antiepidemic_system.utils.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -34,9 +37,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.coroutines.CoroutineContext
 
-class QRCodeActivity : AppCompatActivity(), CoroutineScope {
+class QRCodeActivity : BaseActivity() {
 
     companion object {
         const val TAG = "QRCodeActivity"
@@ -52,25 +54,9 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var mIvQRMsg: ImageView
     private lateinit var mLlBackground: LinearLayout
 
-    //协程
-    private val mJob: Job by lazy { Job() }
-    override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
+    override fun contentView() = R.layout.activity_qrcode
 
-    private val mLocationClient: LocationClient by lazy { LocationClient(this) }
-    private var mLocationText = ""
-
-    private val kv: MMKV by lazy { MMKV.defaultMMKV() }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_qrcode)
-        initView()
-        mCountDownTimer.start()
-        requestQRContent()
-        MapUtils.startOneLocation(mLocationClient, mLocationListener)
-    }
-
-    private fun initView() {
+    override fun findView() {
         mQRCode = findViewById(R.id.iv_qr_code)
         mTvArea = findViewById(R.id.tv_qr_area_name)
         mTvCommunity = findViewById(R.id.tv_qr_community_name)
@@ -80,27 +66,32 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
         mRlDetail = findViewById(R.id.rl_qr_detail)
         mIvQRMsg = findViewById(R.id.iv_qr_my_qr_msg)
         mLlBackground = findViewById(R.id.ll_qr_bg)
+    }
+
+    private val mLocationClient: LocationClient by lazy { LocationClient(this) }
+    private var mLocationText = ""
+
+    private val kv: MMKV by lazy { MMKV.defaultMMKV() }
+
+    override fun initView() {
         val location = kv.decodeString(resources.getString(R.string.mmkv_def_loc_city))
         if (location != null) {
             mTvArea.text = location
         }
         val user = (application as WanderlustApp).gUser ?: return
         mTvCommunity.text = user.communityName
-        mTvName.text = "${user.userName[0]}*${user.userName[user.userName.length - 1]}"
+        mCountDownTimer.start()
+        requestQRContent()
+        CommonUtils.startOneLocation(mLocationClient, mLocationListener)
     }
 
     private fun requestQRContent() {
         val id = (application as WanderlustApp).gUser?.userId ?: return
         launch {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = QRCodeEvent.QRContentReq(id)
-                    retrofit.getQRContent(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.getQRContent(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@QRCodeActivity)
@@ -144,7 +135,7 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
 
     private fun requestRiskAreaData(): RiskAreaEvent.RiskAreaRsp? {
         //首先尝试本地获取，若有，直接返回
-        val localResult = MapUtils.readRiskAreaMMKV(kv)
+        val localResult = CommonUtils.readRiskAreaMMKV(kv)
         if (localResult != null) return localResult
         //获得当前时间戳
         val timestamp = System.currentTimeMillis() / 1000
@@ -162,23 +153,19 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
                 return chain.proceed(build)
             }
         }).retryOnConnectionFailure(true).build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(UrlUtils.AREA_DATA_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-            .create(ApiService::class.java)
         val response = try {
-            retrofit.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
+            Service.areaData.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
         } catch (e: Exception) {
             null
         }
         val result = response?.body()
-        MapUtils.saveRiskAreaMMKV(kv, result)
+        CommonUtils.saveRiskAreaMMKV(kv, result)
         return result
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateHealthHint(qrCodeMessage: QRCodeMessage, qrContent: QRContent) {
+        mTvName.text = qrContent.content.name
         if (qrCodeMessage.color == QRCodeMessage.GREEN) {
             mTvHealthHint.text = "暂未发现健康问题"
         } else {
@@ -240,12 +227,6 @@ class QRCodeActivity : AppCompatActivity(), CoroutineScope {
             mTvArea.text = location.district
             kv.encode(resources.getString(R.string.mmkv_def_loc_city), location.district)
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mJob.cancel()
-        mCountDownTimer.cancel()
     }
 
 }

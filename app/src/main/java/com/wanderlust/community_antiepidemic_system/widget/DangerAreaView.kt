@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
-import com.wanderlust.community_antiepidemic_system.utils.DensityUtils
+import com.wanderlust.community_antiepidemic_system.utils.CommonUtils
 
 class DangerAreaView : LinearLayout, View.OnClickListener {
 
@@ -62,7 +62,7 @@ class DangerAreaView : LinearLayout, View.OnClickListener {
         mRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                 if (parent.getChildAdapterPosition(view) != 0 && mContext != null) {
-                    outRect.top = DensityUtils.dp2px(mContext!!, 5f)
+                    outRect.top = CommonUtils.dp2px(mContext!!, 5f)
                 }
             }
         })

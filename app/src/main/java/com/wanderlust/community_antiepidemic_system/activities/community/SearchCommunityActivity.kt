@@ -21,15 +21,12 @@ import com.wanderlust.community_antiepidemic_system.entity.Community
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.CommunityEvent
-import com.wanderlust.community_antiepidemic_system.network.ApiService
+import com.wanderlust.community_antiepidemic_system.network.Service
 import com.wanderlust.community_antiepidemic_system.utils.LoginType
-import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.greenrobot.eventbus.EventBus
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
 import kotlin.coroutines.CoroutineContext
 
@@ -105,16 +102,11 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
     private fun requestSearch() {
         if (mKeywords.isEmpty() || mType == 0) return
         launch {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val id = if (mType == LoginType.USER) mUser?.userId else mAdmin?.adminId
                     val request = CommunityEvent.SearchReq(mKeywords, id ?: "", mType)
-                    retrofit.searchCommunity(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.searchCommunity(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@SearchCommunityActivity)
@@ -137,16 +129,11 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
 
     private fun requestUserJoinCommunity(userId: String, newId: String, newName: String, oldId: String? = null) {
         launch {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val type = if (oldId == null) CommunityEvent.NEW_JOIN else CommunityEvent.CHANGE
                     val request = CommunityEvent.JoinReq(userId, oldId ?: "", newId, type)
-                    retrofit.joinCommunity(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.joinCommunity(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@SearchCommunityActivity)
@@ -171,15 +158,10 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
 
     private fun requestAdminBindCommunity(adminId: String, newId: String, newName: String) {
         launch {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = CommunityEvent.AdminBindCommunityReq(adminId, newId)
-                    retrofit.adminBindCommunity(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.adminBindCommunity(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@SearchCommunityActivity)

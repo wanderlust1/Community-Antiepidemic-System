@@ -24,9 +24,6 @@ interface ApiService {
     @GET("ncov/cityDiseaseInfoWithTrend")
     fun getAntiepidemicData() : Call<DiseaseDataEvent.AntiepidemicRsp>
 
-    @GET("getUser")
-    fun getUserData(@Query("id") id: String, @Query("pw") password: String): Call<User>
-
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("login")
     fun login(@Body body: RequestBody): Call<UserEvent.LoginRsp>
@@ -86,5 +83,17 @@ interface ApiService {
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("getNoReadCount")
     fun getNoReadCount(@Body body: RequestBody): Call<NoticeEvent.GetNoReadCountRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("deleteNotice")
+    fun deleteNotice(@Body body: RequestBody): Call<NoticeEvent.DeleteNoticeRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("getCommunityUsers")
+    fun getCommunityUsers(@Body body: RequestBody): Call<UserEvent.GetCommunityUsersRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("kickUser")
+    fun kickUser(@Body body: RequestBody): Call<UserEvent.KickUserRsp>
 
 }

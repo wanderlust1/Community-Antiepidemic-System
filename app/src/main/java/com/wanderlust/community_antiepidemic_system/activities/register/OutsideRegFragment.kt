@@ -23,13 +23,10 @@ import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.entity.Country
 import com.wanderlust.community_antiepidemic_system.entity.OutSideReg
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
-import com.wanderlust.community_antiepidemic_system.network.ApiService
-import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
+import com.wanderlust.community_antiepidemic_system.network.Service
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.ConnectException
@@ -169,7 +166,7 @@ class OutsideRegFragment : Fragment(), CoroutineScope {
         val startDate = format.parse(start)
         val endDate = format.parse(end)
         if (startDate?.after(endDate) == true) {
-            "手机号码格式错误".toast(activity)
+            "出发时间不能晚于返回时间".toast(activity)
             return false
         }
         return true
@@ -219,15 +216,10 @@ class OutsideRegFragment : Fragment(), CoroutineScope {
         val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
         mOutsideReg.date = format.format(System.currentTimeMillis())
         launch {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = RegEvent.AddOutsideRecordReq(mOutsideReg)
-                    retrofit.addOutsideReg(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.addOutsideReg(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(activity)

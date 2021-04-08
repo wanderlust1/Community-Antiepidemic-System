@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/srl_outside_record"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F6F6F6">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/srl_outside_record"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_outside_record"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tv_outside_record_no_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:drawableLeft="@drawable/ic_baseline_info_24"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:text="暂无外出记录"
+            android:textColor="#353535"
+            android:textSize="16sp" />
+
+    </FrameLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

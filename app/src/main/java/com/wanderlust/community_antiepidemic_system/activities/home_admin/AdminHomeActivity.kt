@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.activities.home
+package com.wanderlust.community_antiepidemic_system.activities.home_admin
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

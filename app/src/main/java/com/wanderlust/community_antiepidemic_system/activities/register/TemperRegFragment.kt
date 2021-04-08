@@ -17,14 +17,11 @@ import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.entity.TemperReg
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
-import com.wanderlust.community_antiepidemic_system.network.ApiService
+import com.wanderlust.community_antiepidemic_system.network.Service
 import com.wanderlust.community_antiepidemic_system.utils.HealthType
-import com.wanderlust.community_antiepidemic_system.utils.UrlUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -122,15 +119,10 @@ class TemperRegFragment : Fragment(), CoroutineScope {
         val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
         mTemperReg.date = format.format(System.currentTimeMillis())
         launch {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(UrlUtils.SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = RegEvent.AddTemperRecordReq(mTemperReg)
-                    retrofit.addTemperReg(Gson().toJson(request).toRequestBody()).execute()
+                    Service.request.addTemperReg(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(activity)
