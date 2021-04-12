@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:id="@+id/iv_user_list_back"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_baseline_arrow_back_ios_24" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="社区用户列表"
+            android:textSize="16sp"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srl_user_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F6F6F6">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_user_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>

@@ -1,6 +1,5 @@
 package com.wanderlust.community_antiepidemic_system.network
 
-import android.content.Context
 import android.util.Log
 import com.tencent.mmkv.MMKV
 import com.wanderlust.community_antiepidemic_system.R
