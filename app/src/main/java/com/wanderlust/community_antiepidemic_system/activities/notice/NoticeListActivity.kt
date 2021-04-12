@@ -1,7 +1,6 @@
 package com.wanderlust.community_antiepidemic_system.activities.notice
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.util.Log
 import android.view.View
@@ -17,7 +16,7 @@ import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
 import com.wanderlust.community_antiepidemic_system.activities.register.TemperatureActivity
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.NoticeEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.LoginType
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.Dispatchers
@@ -114,7 +113,7 @@ class NoticeListActivity : BaseActivity() {
                     } else {
                         NoticeEvent.GetNoticesListReq("", mAdmin!!.communityId, mType)
                     }
-                    Service.request.getNoticesList(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.getNoticesList(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@NoticeListActivity)
@@ -143,7 +142,7 @@ class NoticeListActivity : BaseActivity() {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = NoticeEvent.SetNoticeReadReq(mUser!!.userId, noticeId, mUser!!.communityId)
-                    Service.request.setNoticeRead(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.setNoticeRead(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@NoticeListActivity)
@@ -170,7 +169,7 @@ class NoticeListActivity : BaseActivity() {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = NoticeEvent.DeleteNoticeReq(noticeId)
-                    Service.request.deleteNotice(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.deleteNotice(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@NoticeListActivity)

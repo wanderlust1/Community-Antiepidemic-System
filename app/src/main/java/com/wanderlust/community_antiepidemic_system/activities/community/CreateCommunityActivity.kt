@@ -15,8 +15,9 @@ import com.wanderlust.community_antiepidemic_system.entity.Community
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.CommunityEvent
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.addErrorTextWatcher
+import com.wanderlust.community_antiepidemic_system.utils.toJsonRequest
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -82,23 +83,13 @@ class CreateCommunityActivity : BaseActivity() {
     private fun requestCreate(community: Community) {
         val adminId = (application as WanderlustApp).gAdmin?.adminId ?: return
         launch {
-            val response = try {
-                withContext(Dispatchers.IO) {
-                    val request = CommunityEvent.CreateCommunityReq(community, adminId)
-                    Service.request.createCommunity(Gson().toJson(request).toRequestBody()).execute()
-                }
-            } catch (e: ConnectException) {
-                R.string.connection_error.toast(this@CreateCommunityActivity)
-                null
-            } catch (e: Exception) {
-                e.printStackTrace()
-                R.string.timeout_error.toast(this@CreateCommunityActivity)
-                null
+            val result = ServiceManager.request {
+                val request = CommunityEvent.CreateCommunityReq(community, adminId)
+                it.createCommunity(request.toJsonRequest())
             }
             mBtnSubmit.isClickable = true
-            Log.d(OutsideRegFragment.TAG, response?.body().toString())
-            if (response?.body() == null) return@launch
-            val result = response.body()!!
+            Log.d(OutsideRegFragment.TAG, result.toString())
+            if (result == null) return@launch
             result.msg.toast(this@CreateCommunityActivity)
             if (result.code == RegEvent.SUCC) {
                 mBtnSubmit.background = getDrawable(R.drawable.button_disable)

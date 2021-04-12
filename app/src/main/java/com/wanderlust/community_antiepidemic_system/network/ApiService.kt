@@ -1,6 +1,5 @@
 package com.wanderlust.community_antiepidemic_system.network
 
-import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.*
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -95,5 +94,9 @@ interface ApiService {
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("kickUser")
     fun kickUser(@Body body: RequestBody): Call<UserEvent.KickUserRsp>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("getCommunityMessage")
+    fun getCommunityMessage(@Body body: RequestBody): Call<CommunityEvent.CommunityMessageRsp>
 
 }

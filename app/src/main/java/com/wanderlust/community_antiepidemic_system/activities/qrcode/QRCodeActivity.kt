@@ -21,19 +21,12 @@ import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
 import com.wanderlust.community_antiepidemic_system.entity.QRCodeMessage
 import com.wanderlust.community_antiepidemic_system.entity.QRContent
 import com.wanderlust.community_antiepidemic_system.event.QRCodeEvent
-import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
-import com.wanderlust.community_antiepidemic_system.network.ApiService
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -91,7 +84,7 @@ class QRCodeActivity : BaseActivity() {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = QRCodeEvent.QRContentReq(id)
-                    Service.request.getQRContent(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.getQRContent(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@QRCodeActivity)
@@ -103,9 +96,7 @@ class QRCodeActivity : BaseActivity() {
             Log.d(TAG, response?.body().toString())
             if (response?.body() == null) return@launch
             val qrContent = response.body()!!.qrContent
-            val riskAreas = withContext(Dispatchers.IO) {
-                requestRiskAreaData()
-            }
+            val riskAreas = ServiceManager.requestRiskAreaData()
             val qrCodeMessage = QRCodeUtils.getQRCodeColor(qrContent, riskAreas)
             val color = when (qrCodeMessage.color) { //二维码颜色
                 QRCodeMessage.GREEN -> {
@@ -131,36 +122,6 @@ class QRCodeActivity : BaseActivity() {
             Glide.with(this@QRCodeActivity).load(qrCodeBytes).centerCrop().into(mQRCode)
             updateHealthHint(qrCodeMessage, qrContent)
         }
-    }
-
-    private fun requestRiskAreaData(): RiskAreaEvent.RiskAreaRsp? {
-        //首先尝试本地获取，若有，直接返回
-        val localResult = CommonUtils.readRiskAreaMMKV(kv)
-        if (localResult != null) return localResult
-        //获得当前时间戳
-        val timestamp = System.currentTimeMillis() / 1000
-        //封装Header数据
-        val client = OkHttpClient.Builder().addInterceptor(object : Interceptor {
-            override fun intercept(chain: Interceptor.Chain): Response {
-                val signatureStr = "$timestamp${RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_SIGNATURE_KEY}$timestamp"
-                val signature = RiskAreaEvent.RiskAreaReq.getSHA256StrJava(signatureStr).toUpperCase(Locale.ROOT)
-                val build = chain.request().newBuilder()
-                    .addHeader("x-wif-nonce", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_NONCE)
-                    .addHeader("x-wif-paasid", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_PAASID)
-                    .addHeader("x-wif-signature", signature)
-                    .addHeader("x-wif-timestamp", timestamp.toString())
-                    .build()
-                return chain.proceed(build)
-            }
-        }).retryOnConnectionFailure(true).build()
-        val response = try {
-            Service.areaData.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
-        } catch (e: Exception) {
-            null
-        }
-        val result = response?.body()
-        CommonUtils.saveRiskAreaMMKV(kv, result)
-        return result
     }
 
     @SuppressLint("SetTextI18n")

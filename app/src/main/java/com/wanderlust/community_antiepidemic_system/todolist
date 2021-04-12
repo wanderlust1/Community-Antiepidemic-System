@@ -16,7 +16,11 @@
  √ 五、社区管理员新建、绑定、改绑社区
    六、社区管理主页
  √     1.显示本社区所有用户列表
-       2.体温、外出统计数据，图表
+ √     2.体温、外出统计数据，图表
+       {
+            1）体温登记情况（近一周登记人数、未登记人数、体温异常人数、正常人数，以及疑似、确诊、接触者人数）
+            2）外出登记情况（外出人数、到达中高风险地区人数）
+       }
  √ 七、社区管理员发送公告、提醒用户登记体温功能
    八、改MVVM架构
 
@@ -41,3 +45,24 @@ QRCode实体
     366f01d8312dbccfdfc1d1a1f0d4f6ab3518613d9ae1e5"}
 3.最新体温记录以及确诊、接触记录
 5.最近外出地区记录（一个月之前到今天为止，未到出行时间的记录不算，也就是最近一个月到过的地方）
+
+/*val result = RiskAreaEvent.RiskAreaRsp(RiskAreaEvent.RiskAreaData().apply {
+    time = "2021-02-16 15时"
+    highCount = 3
+    midCount = 5
+    highList = mutableListOf(
+        RiskAreaEvent.Area("吉林省", "通化市", "东昌区", ("光明街光复社区华翔雍和苑小区，民主街江南社区波尔多小镇小区，民主街自由自宅小区，" +
+                "民主街丽江社区厚德载物B区，民主街民强社区中房花园小区，龙泉街龙兴社区康馨园3期龙泉街龙水社区大禹康城小区，新站街新兴社区中安欣盛A区，" +
+                "新站街富通1号楼，新站街东庆社区外贸亿德C区新站街靖宇社区怡星园小区新站街胜利社区公用事业局家属楼，新站街新山社区银都府邸小区，" +
+                "团结街建和社区东华小区，团结街新风社区农行60户楼，团结街东岭社区东正奥园小区").split("，").toMutableList()),
+        RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "利民开发区", ("裕田街道").split("，").toMutableList()),
+        RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "呼兰区", ("兰河街道").split("，").toMutableList())
+    )
+    midList = mutableListOf(
+        RiskAreaEvent.Area("上海市", "上海市", "浦东新区", mutableListOf("高东镇新高苑一期小区")),
+        RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "呼兰区", ("建设路街道").split("，").toMutableList()),
+        RiskAreaEvent.Area("黑龙江省", "绥化市", "望奎县", ("").split("，").toMutableList()),
+        RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "道外区", ("永源镇").split("，").toMutableList()),
+        RiskAreaEvent.Area("黑龙江省", "石家庄市", "藁城区", ("").split("，").toMutableList())
+    )
+})*/

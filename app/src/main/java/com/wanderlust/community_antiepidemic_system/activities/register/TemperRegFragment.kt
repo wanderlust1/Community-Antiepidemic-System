@@ -17,7 +17,7 @@ import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.entity.TemperReg
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.HealthType
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
@@ -122,7 +122,7 @@ class TemperRegFragment : Fragment(), CoroutineScope {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = RegEvent.AddTemperRecordReq(mTemperReg)
-                    Service.request.addTemperReg(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.addTemperReg(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(activity)

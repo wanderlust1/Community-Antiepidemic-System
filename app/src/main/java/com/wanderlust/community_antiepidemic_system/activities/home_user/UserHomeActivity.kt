@@ -28,7 +28,7 @@ import com.wanderlust.community_antiepidemic_system.activities.notice.NoticeList
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.DiseaseDataEvent
 import com.wanderlust.community_antiepidemic_system.event.NoticeEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.DialogUtils
 import com.wanderlust.community_antiepidemic_system.utils.CommonUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
@@ -166,22 +166,9 @@ class UserHomeActivity : BaseActivity() {
     @SuppressLint("SetTextI18n")
     private fun requestDiseaseData() {
         launch {
-            val response = try {
-                withContext(Dispatchers.IO) {
-                    Service.staticData.getAntiepidemicData().execute()
-                }
-            } catch (e: ConnectException) {
-                R.string.connection_error.toast(this@UserHomeActivity)
-                null
-            } catch (e: Exception) {
-                e.printStackTrace()
-                R.string.other_error.toast(this@UserHomeActivity)
-                null
+            mResult = ServiceManager.requestDiseaseStaticData().apply {
+                mRefreshLayout.isRefreshing = false
             }
-            mRefreshLayout.isRefreshing = false
-            Log.d(TAG, response?.body().toString())
-            if (response?.body() == null) return@launch
-            mResult = response.body()!!
             mTvDate.text = "截至 ${mResult?.country?.time}"
             mDsvCountry.setData(mResult?.country)
             mDsvProvince.setData(mResult?.provinceArray?.find {
@@ -198,7 +185,7 @@ class UserHomeActivity : BaseActivity() {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = NoticeEvent.GetNoReadCountReq(mUser!!.userId, mUser!!.communityId)
-                    Service.request.getNoReadCount(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.getNoReadCount(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@UserHomeActivity)

@@ -1,6 +1,7 @@
 package com.wanderlust.community_antiepidemic_system.event
 
 import com.wanderlust.community_antiepidemic_system.entity.Community
+import com.wanderlust.community_antiepidemic_system.entity.CommunityStatistics
 
 interface CommunityEvent {
 
@@ -26,5 +27,9 @@ interface CommunityEvent {
     data class AdminBindCommunityReq(val adminId: String, val newCommunityId: String)
 
     data class AdminBindCommunityRsp(val code: Int, val msg: String)
+
+    data class CommunityMessageReq(val adminId: String)
+
+    data class CommunityMessageRsp(val community: Community, val statistics: CommunityStatistics, val code: Int)
 
 }

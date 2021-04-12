@@ -1,7 +1,6 @@
 package com.wanderlust.community_antiepidemic_system.activities.map
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -19,19 +18,13 @@ import com.baidu.mapapi.search.district.DistrictSearch
 import com.baidu.mapapi.search.district.DistrictSearchOption
 import com.baidu.mapapi.search.poi.*
 import com.baidu.mapapi.utils.SpatialRelationUtil
-import com.tencent.mmkv.MMKV
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.CommonUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import com.wanderlust.community_antiepidemic_system.widget.DangerAreaView
 import kotlinx.coroutines.*
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Response
-import java.net.ConnectException
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
 
@@ -119,67 +112,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     private fun startNetworkRequest() {
         mJob = Job()
         launch {
-            val kv = MMKV.defaultMMKV()
-            val localResult = CommonUtils.readRiskAreaMMKV(kv)
-            val result = if (localResult != null) {
-                localResult
-            } else {
-                //获得当前时间戳
-                val timestamp = System.currentTimeMillis() / 1000
-                //封装Header数据
-                val client = withContext(Dispatchers.IO) {
-                    OkHttpClient.Builder().addInterceptor(object : Interceptor {
-                        override fun intercept(chain: Interceptor.Chain): Response {
-                            val signatureStr = "$timestamp${RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_SIGNATURE_KEY}$timestamp"
-                            val signature = RiskAreaEvent.RiskAreaReq.getSHA256StrJava(signatureStr).toUpperCase(Locale.ROOT)
-                            val build = chain.request().newBuilder()
-                                .addHeader("x-wif-nonce", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_NONCE)
-                                .addHeader("x-wif-paasid", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_PAASID)
-                                .addHeader("x-wif-signature", signature)
-                                .addHeader("x-wif-timestamp", timestamp.toString())
-                                .build()
-                            return chain.proceed(build)
-                        }
-                    }).retryOnConnectionFailure(true).build()
-                }
-                //创建发送请求
-                val response = try {
-                    withContext(Dispatchers.IO) {
-                        Service.areaData.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
-                    }
-                } catch (e: ConnectException) {
-                    R.string.connection_error.toast(this@MapActivity)
-                    null
-                } catch (e: Exception) {
-                    R.string.timeout_error.toast(this@MapActivity)
-                    null
-                }
-                if (response?.body() == null) return@launch
-                //处理结果
-                CommonUtils.saveRiskAreaMMKV(kv, response.body())
-                response.body()!!
-            }
-            /*val result = RiskAreaEvent.RiskAreaRsp(RiskAreaEvent.RiskAreaData().apply {
-                time = "2021-02-16 15时"
-                highCount = 3
-                midCount = 5
-                highList = mutableListOf(
-                    RiskAreaEvent.Area("吉林省", "通化市", "东昌区", ("光明街光复社区华翔雍和苑小区，民主街江南社区波尔多小镇小区，民主街自由自宅小区，" +
-                            "民主街丽江社区厚德载物B区，民主街民强社区中房花园小区，龙泉街龙兴社区康馨园3期龙泉街龙水社区大禹康城小区，新站街新兴社区中安欣盛A区，" +
-                            "新站街富通1号楼，新站街东庆社区外贸亿德C区新站街靖宇社区怡星园小区新站街胜利社区公用事业局家属楼，新站街新山社区银都府邸小区，" +
-                            "团结街建和社区东华小区，团结街新风社区农行60户楼，团结街东岭社区东正奥园小区").split("，").toMutableList()),
-                    RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "利民开发区", ("裕田街道").split("，").toMutableList()),
-                    RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "呼兰区", ("兰河街道").split("，").toMutableList())
-                )
-                midList = mutableListOf(
-                    RiskAreaEvent.Area("上海市", "上海市", "浦东新区", mutableListOf("高东镇新高苑一期小区")),
-                    RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "呼兰区", ("建设路街道").split("，").toMutableList()),
-                    RiskAreaEvent.Area("黑龙江省", "绥化市", "望奎县", ("").split("，").toMutableList()),
-                    RiskAreaEvent.Area("黑龙江省", "哈尔滨市", "道外区", ("永源镇").split("，").toMutableList()),
-                    RiskAreaEvent.Area("黑龙江省", "石家庄市", "藁城区", ("").split("，").toMutableList())
-                )
-            })*/
-            Log.d("zzz", result.toString())
+            val result = ServiceManager.requestRiskAreaData() ?: return@launch
             mTotalAreaCount = result.data.highList.size + result.data.midList.size
             isStartSearch = true
             mDangerAreaView.setData(result.data.highList, result.data.midList) { area ->

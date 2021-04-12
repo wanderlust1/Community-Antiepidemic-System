@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
@@ -8,31 +7,178 @@
     android:orientation="vertical"
     tools:context=".activities.home_admin.AdminHomeActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        android:stateListAnimator="@animator/appbar_elevation"
-        app:layout_constraintTop_toTopOf="parent">
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_home_admin"
+        android:layout_height="44dp"
+        android:background="@color/colorPrimary">
+        <TextView
+            android:id="@+id/tv_admin_home_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:text="@string/app_name"
+            android:textColor="#fff"
+            android:textSize="17sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:text="社区管理员"
+            android:layout_toRightOf="@id/tv_admin_home_title"
+            android:layout_alignBaseline="@id/tv_admin_home_title"
+            android:textColor="#E3E3E3"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srl_admin_overview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            app:tabIndicatorColor="#fff"
-            app:tabIndicatorHeight="2dp"
-            app:tabRippleColor="#E7E7E7"
-            app:tabSelectedTextColor="#fff"
-            app:tabTextColor="#fff"
-            android:background="@color/colorPrimary"/>
-    </LinearLayout>
+            android:layout_height="match_parent">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#F6F6F6"
+                    android:orientation="vertical">
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/tv_admin_notification"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_white_round_corner"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:drawableStart="@drawable/ic_baseline_notifications_c"
+                            android:drawablePadding="12dp"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="12dp"
+                            android:text="公告和提醒"
+                            android:textColor="#353535"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:layout_marginRight="5dp"/>
+                        <TextView
+                            android:id="@+id/tv_admin_user_list"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_white_round_corner"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:drawableStart="@drawable/ic_baseline_person_blue"
+                            android:drawablePadding="12dp"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="12dp"
+                            android:text="用户列表"
+                            android:textColor="#353535"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="5dp"/>
+                    </LinearLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/vp_home_admin"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    <TextView
+                        android:id="@+id/tv_admin_no_community"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_white_round_corner"
+                        android:clickable="true"
+                        android:drawableLeft="@drawable/ic_baseline_home_24"
+                        android:drawablePadding="12dp"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:padding="12dp"
+                        android:text="点击此处绑定社区"
+                        android:textColor="#353535"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <RelativeLayout
+                        android:id="@+id/rl_admin_my_community"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_white_round_corner"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:id="@+id/tv_admin_my_community"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/ic_baseline_home_24"
+                            android:drawablePadding="12dp"
+                            android:gravity="center_vertical"
+                            android:textColor="#353535"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_admin_my_community_change"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:drawableEnd="@drawable/ic_baseline_arrow_right_gray"
+                            android:drawablePadding="-2dp"
+                            android:gravity="center_vertical"
+                            android:text="改绑社区"
+                            android:textColor="#B8B8B8"
+                            android:textSize="12dp" />
+
+                        <TextView
+                            android:id="@+id/tv_admin_my_community_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_admin_my_community"
+                            android:layout_marginLeft="-5dp"
+                            android:layout_marginTop="6dp"
+                            android:drawableLeft="@drawable/ic_baseline_arrow_right_black"
+                            android:gravity="center_vertical"
+                            android:textColor="#353535"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_admin_my_community_phone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_admin_my_community_address"
+                            android:layout_marginLeft="-5dp"
+                            android:layout_marginTop="6dp"
+                            android:drawableLeft="@drawable/ic_baseline_arrow_right_black"
+                            android:gravity="center_vertical"
+                            android:textColor="#353535"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                    <com.wanderlust.community_antiepidemic_system.widget.AdminStatisticView
+                        android:id="@+id/asv_admin_stat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_white_round_corner"
+                        android:orientation="vertical"/>
+                </LinearLayout>
+            </FrameLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

@@ -3,8 +3,6 @@ package com.wanderlust.community_antiepidemic_system.activities.notice
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.CountDownTimer
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
@@ -15,7 +13,7 @@ import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
 import com.wanderlust.community_antiepidemic_system.entity.Notice
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.NoticeEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.addLimitTextWatcher
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.Dispatchers
@@ -96,7 +94,7 @@ class EditNoticeActivity : BaseActivity() {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = NoticeEvent.AddNoticeReq(notice)
-                    Service.request.addNotice(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.addNotice(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@EditNoticeActivity)

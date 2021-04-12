@@ -12,22 +12,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.gson.Gson
-import com.tencent.mmkv.MMKV
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.entity.OutSideReg
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
-import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.CommonUtils
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import java.net.ConnectException
-import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 class OutsideRecordFragment : Fragment(), CoroutineScope {
@@ -83,7 +77,7 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = RegEvent.GetOutSideRecordReq(id)
-                    Service.request.getOutsideRecord(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.getOutsideRecord(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(activity)
@@ -113,45 +107,7 @@ class OutsideRecordFragment : Fragment(), CoroutineScope {
 
     private fun requestRiskAreaData() {
         launch {
-            val kv = MMKV.defaultMMKV()
-            val localResult = CommonUtils.readRiskAreaMMKV(kv)
-            val result = if (localResult != null) {
-                localResult
-            } else {
-                //获得当前时间戳
-                val timestamp = System.currentTimeMillis() / 1000
-                //封装Header数据
-                val client = withContext(Dispatchers.IO) {
-                    OkHttpClient.Builder().addInterceptor(object : Interceptor {
-                        override fun intercept(chain: Interceptor.Chain): Response {
-                            val signatureStr = "$timestamp${RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_SIGNATURE_KEY}$timestamp"
-                            val signature = RiskAreaEvent.RiskAreaReq.getSHA256StrJava(signatureStr).toUpperCase(Locale.ROOT)
-                            val build = chain.request().newBuilder()
-                                .addHeader("x-wif-nonce", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_NONCE)
-                                .addHeader("x-wif-paasid", RiskAreaEvent.RiskAreaReq.STATE_COUNCIL_X_WIF_PAASID)
-                                .addHeader("x-wif-signature", signature)
-                                .addHeader("x-wif-timestamp", timestamp.toString())
-                                .build()
-                            return chain.proceed(build)
-                        }
-                    }).retryOnConnectionFailure(true).build()
-                }
-                val response = try {
-                    withContext(Dispatchers.IO) {
-                        Service.areaData.getRiskAreaData(RiskAreaEvent.RiskAreaReq(timestamp = timestamp)).execute()
-                    }
-                } catch (e: ConnectException) {
-                    R.string.connection_error.toast(activity)
-                    null
-                } catch (e: Exception) {
-                    R.string.timeout_error.toast(activity)
-                    null
-                }
-                Log.d(TAG, "onResponse: " + response?.body())
-                if (response?.body() == null) return@launch
-                CommonUtils.saveRiskAreaMMKV(kv, response.body())
-                response.body()!!
-            }
+            val result = ServiceManager.requestRiskAreaData() ?: return@launch
             val areas = mutableListOf<String>()
             result.data.highList.forEach {
                 areas.add(it.county)

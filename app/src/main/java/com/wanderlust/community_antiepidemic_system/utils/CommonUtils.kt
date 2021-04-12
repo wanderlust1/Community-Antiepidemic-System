@@ -12,6 +12,7 @@ import androidx.annotation.DrawableRes
 import com.baidu.location.*
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
+import com.wanderlust.community_antiepidemic_system.event.DiseaseDataEvent
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
 import java.text.SimpleDateFormat
 import java.util.*
@@ -125,5 +126,36 @@ object CommonUtils {
         Log.d("RiskAreaRsp", "已从本地载入缓存")
         return Gson().fromJson(data, RiskAreaEvent.RiskAreaRsp::class.java)
     }
+
+    /**
+     * 将疫情统计数据保存至本地，记录时间戳。
+     * 避免频繁请求接口，减小开销
+     */
+    fun saveDiseaseDataMMKV(saver: MMKV, result: DiseaseDataEvent.AntiepidemicRsp?) {
+        if (result == null) return
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(Calendar.getInstance().time)
+        saver.encode("AntiepidemicRsp_time", date)
+        saver.encode("AntiepidemicRsp_data", Gson().toJson(result))
+        Log.d("AntiepidemicRsp", "已缓存至本地，date=${date}")
+    }
+
+    /**
+     * 读取已保存至本地的疫情统计数据。避免频繁请求接口，减小开销
+     * （如果上次保存时间距今大于一天，则认为本地信息已过期，需要重新网络请求）
+     */
+    fun readDiseaseDataMMKV(reader: MMKV): DiseaseDataEvent.AntiepidemicRsp? {
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(Calendar.getInstance().time)
+        val oldDate = reader.decodeString("AntiepidemicRsp_time")
+        if (oldDate.isNullOrEmpty() || oldDate != date) {
+            return null
+        }
+        val data = reader.decodeString("AntiepidemicRsp_data")
+        if (data.isNullOrEmpty()) {
+            return null
+        }
+        Log.d("AntiepidemicRsp", "已从本地载入缓存")
+        return Gson().fromJson(data, DiseaseDataEvent.AntiepidemicRsp::class.java)
+    }
+
 
 }

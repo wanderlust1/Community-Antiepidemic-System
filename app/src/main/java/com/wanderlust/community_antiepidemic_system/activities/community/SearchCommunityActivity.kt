@@ -21,7 +21,7 @@ import com.wanderlust.community_antiepidemic_system.entity.Community
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.BusEvent
 import com.wanderlust.community_antiepidemic_system.event.CommunityEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.LoginType
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
@@ -106,7 +106,7 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
                 withContext(Dispatchers.IO) {
                     val id = if (mType == LoginType.USER) mUser?.userId else mAdmin?.adminId
                     val request = CommunityEvent.SearchReq(mKeywords, id ?: "", mType)
-                    Service.request.searchCommunity(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.searchCommunity(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@SearchCommunityActivity)
@@ -133,7 +133,7 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
                 withContext(Dispatchers.IO) {
                     val type = if (oldId == null) CommunityEvent.NEW_JOIN else CommunityEvent.CHANGE
                     val request = CommunityEvent.JoinReq(userId, oldId ?: "", newId, type)
-                    Service.request.joinCommunity(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.joinCommunity(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@SearchCommunityActivity)
@@ -161,7 +161,7 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = CommunityEvent.AdminBindCommunityReq(adminId, newId)
-                    Service.request.adminBindCommunity(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.adminBindCommunity(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(this@SearchCommunityActivity)

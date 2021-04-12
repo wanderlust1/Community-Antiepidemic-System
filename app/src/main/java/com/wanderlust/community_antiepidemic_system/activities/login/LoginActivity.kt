@@ -14,7 +14,7 @@ import com.wanderlust.community_antiepidemic_system.entity.Admin
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.UserEvent
 import com.wanderlust.community_antiepidemic_system.activities.home_user.UserHomeActivity
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.*
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -103,32 +103,22 @@ class LoginActivity : BaseActivity() {
     private fun requestLogin(id: String, password: String) {
         launch {
             val type = mSelectedType
-            val response = try {
-                withContext(Dispatchers.IO) {
-                    val request = if (type == LoginType.USER) {
-                        val user = User(userId = id, password = password)
-                        UserEvent.LoginReq(user = user, loginType = type)
-                    } else {
-                        val admin = Admin(adminId = id, password = password)
-                        UserEvent.LoginReq(admin = admin, loginType = type)
-                    }
-                    Service.request.login(Gson().toJson(request).toRequestBody()).execute()
+            val result = ServiceManager.request {
+                val request = if (type == LoginType.USER) {
+                    val user = User(userId = id, password = password)
+                    UserEvent.LoginReq(user = user, loginType = type)
+                } else {
+                    val admin = Admin(adminId = id, password = password)
+                    UserEvent.LoginReq(admin = admin, loginType = type)
                 }
-            } catch (e: ConnectException) {
-                R.string.connection_error.toast(this@LoginActivity)
-                null
-            } catch (e: Exception) {
-                R.string.timeout_error.toast(this@LoginActivity)
-                null
+                it.login(request.toJsonRequest())
             }
-            Log.d(TAG, "onResponse: " + response?.body())
+            Log.d(TAG, result.toString())
             mDialog.dismiss()
             mBtnSubmit.isClickable = true
-            if (response?.body() == null) return@launch
+            result?.msg?.toast()
             //处理结果
-            val result = response.body()!!
-            result.msg.toast(this@LoginActivity)
-            if (result.code == UserEvent.SUCC) {
+            if (result != null && result.code == UserEvent.SUCC) {
                 val app = application as WanderlustApp
                 app.gType = type
                 if (type == LoginType.USER) {

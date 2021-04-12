@@ -23,7 +23,7 @@ import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.entity.Country
 import com.wanderlust.community_antiepidemic_system.entity.OutSideReg
 import com.wanderlust.community_antiepidemic_system.event.RegEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.toast
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -219,7 +219,7 @@ class OutsideRegFragment : Fragment(), CoroutineScope {
             val response = try {
                 withContext(Dispatchers.IO) {
                     val request = RegEvent.AddOutsideRecordReq(mOutsideReg)
-                    Service.request.addOutsideReg(Gson().toJson(request).toRequestBody()).execute()
+                    ServiceManager.client.addOutsideReg(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
                 R.string.connection_error.toast(activity)

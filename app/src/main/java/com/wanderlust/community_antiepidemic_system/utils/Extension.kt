@@ -4,23 +4,42 @@ import android.content.Context
 import android.content.SyncStatusObserver
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
+import com.wanderlust.community_antiepidemic_system.R
+import com.wanderlust.community_antiepidemic_system.WanderlustApp
+import com.wanderlust.community_antiepidemic_system.activities.home_admin.AdminHomeActivity
 import com.wanderlust.community_antiepidemic_system.activities.notice.EditNoticeActivity
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Call
+import java.net.ConnectException
 
 /**
  * KT扩展函数工具
  * @author Wanderlust
  */
-
-fun String.toast(context: Context?) {
-    Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+fun String.toast(context: Context? = WanderlustApp.context) {
+    if (context != null) {
+        Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+    }
 }
 
-fun Int.toast(context: Context?) {
-    Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+fun Int.toast(context: Context? = WanderlustApp.context) {
+    if (context != null) {
+        Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+    }
+}
+
+fun Any.toJsonRequest(): RequestBody {
+    return Gson().toJson(this).toRequestBody()
 }
 
 fun TextInputEditText.addErrorTextWatcher(parent: TextInputLayout, errorText: String) {

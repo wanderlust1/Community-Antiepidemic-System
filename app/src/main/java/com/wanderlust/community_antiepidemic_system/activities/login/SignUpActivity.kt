@@ -2,31 +2,23 @@ package com.wanderlust.community_antiepidemic_system.activities.login
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
-import com.wanderlust.community_antiepidemic_system.network.ApiService
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
 import com.wanderlust.community_antiepidemic_system.entity.Admin
 import com.wanderlust.community_antiepidemic_system.entity.User
 import com.wanderlust.community_antiepidemic_system.event.UserEvent
-import com.wanderlust.community_antiepidemic_system.network.Service
+import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.*
 import kotlinx.coroutines.*
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
 import java.net.ConnectException
-import kotlin.coroutines.CoroutineContext
 
 class SignUpActivity : BaseActivity() {
 
@@ -129,36 +121,24 @@ class SignUpActivity : BaseActivity() {
         mTilPhone.isErrorEnabled = phone.isEmpty()
     }
 
-    private fun requestRegister(id: String, password: String,
-                                cid: String = "", trueName: String = "", phone: String = "") {
+    private fun requestRegister(id: String, password: String, cid: String = "", trueName: String = "", phone: String = "") {
         launch {
             val type = mSelectedType
-            val response = try {
-                withContext(Dispatchers.IO) {
-                    val request = if (type == LoginType.USER) {
-                        val user = User(id, password, trueName, cid, phone)
-                        UserEvent.RegisterReq(user = user, loginType = type)
-                    } else {
-                        val admin = Admin(id, password)
-                        UserEvent.RegisterReq(admin = admin, loginType = type)
-                    }
-                    Service.request.register(Gson().toJson(request).toRequestBody()).execute()
+            val result = ServiceManager.request {
+                val request = if (type == LoginType.USER) {
+                    val user = User(id, password, trueName, cid, phone)
+                    UserEvent.RegisterReq(user = user, loginType = type)
+                } else {
+                    val admin = Admin(id, password)
+                    UserEvent.RegisterReq(admin = admin, loginType = type)
                 }
-            } catch (e: ConnectException) {
-                R.string.connection_error.toast(this@SignUpActivity)
-                null
-            } catch (e: Exception) {
-                R.string.timeout_error.toast(this@SignUpActivity)
-                null
+                it.register(request.toJsonRequest())
             }
-            Log.d(LoginActivity.TAG, "onResponse: " + response?.body())
+            Log.d(LoginActivity.TAG, "onResponse: " + result.toString())
             mDialog.dismiss()
             mBtnSignUp.isClickable = true
-            if (response?.body() == null) return@launch
-            //处理结果
-            val result = response.body()!!
-            result.msg.toast(this@SignUpActivity)
-            if (result.code == UserEvent.SUCC) {
+            result?.msg?.toast()
+            if (result != null && result.code == UserEvent.SUCC) {
                 val intent = Intent()
                 intent.putExtra("u", id)
                 intent.putExtra("p", password)

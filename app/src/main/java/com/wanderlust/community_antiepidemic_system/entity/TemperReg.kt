@@ -1,5 +1,7 @@
 package com.wanderlust.community_antiepidemic_system.entity
 
+import java.util.*
+
 data class TemperReg (
 
     var userId: String = "",
@@ -14,6 +16,8 @@ data class TemperReg (
 
     var diagnose: Int = 0,
 
-    var isDanger: Boolean = false
+    var isDanger: Boolean = false,
+
+    var dateFormat: Date? = null
 
 )

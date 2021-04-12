@@ -1,4 +1,4 @@
-package com.wanderlust.community_antiepidemic_system.activities.home_admin
+package com.wanderlust.community_antiepidemic_system.activities.userlist
 
 import android.content.Context
 import android.view.LayoutInflater
