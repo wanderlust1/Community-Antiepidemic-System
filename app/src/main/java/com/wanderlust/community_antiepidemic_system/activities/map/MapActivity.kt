@@ -1,9 +1,8 @@
 package com.wanderlust.community_antiepidemic_system.activities.map
 
-import android.os.Bundle
+import android.graphics.Color
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
@@ -11,7 +10,6 @@ import com.baidu.location.LocationClient
 import com.baidu.mapapi.map.*
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.model.LatLngBounds
-import com.baidu.mapapi.search.core.PoiInfo
 import com.baidu.mapapi.search.core.SearchResult
 import com.baidu.mapapi.search.district.DistrictResult
 import com.baidu.mapapi.search.district.DistrictSearch
@@ -19,16 +17,16 @@ import com.baidu.mapapi.search.district.DistrictSearchOption
 import com.baidu.mapapi.search.poi.*
 import com.baidu.mapapi.utils.SpatialRelationUtil
 import com.wanderlust.community_antiepidemic_system.R
+import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
+import com.wanderlust.community_antiepidemic_system.event.CommunityEvent
 import com.wanderlust.community_antiepidemic_system.event.RiskAreaEvent
 import com.wanderlust.community_antiepidemic_system.network.ServiceManager
-import com.wanderlust.community_antiepidemic_system.utils.CommonUtils
-import com.wanderlust.community_antiepidemic_system.utils.toast
+import com.wanderlust.community_antiepidemic_system.utils.*
 import com.wanderlust.community_antiepidemic_system.widget.DangerAreaView
 import kotlinx.coroutines.*
 import kotlin.collections.ArrayList
-import kotlin.coroutines.CoroutineContext
 
-class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, CoroutineScope {
+class MapActivity : BaseActivity() {
 
     companion object {
         const val TAG = "MapActivity"
@@ -44,44 +42,63 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
         LocationClient(this)
     }
 
-    //包含所有风险地区的列表
-    private val mPolyLineList: MutableList<List<List<LatLng>>> = ArrayList()
-
-    //地点/区域检索
-    private val mDistrictSearchList = mutableListOf<DistrictSearch>()
-    private val mPoiSearch: PoiSearch by lazy {
-        PoiSearch.newInstance().apply {
-            setOnGetPoiSearchResultListener(this@MapActivity)
-        }
-    }
-
     private var mTotalAreaCount = 0   //待搜索的地区总数
     private var mCurrSearchedArea = 0 //当前已搜索的地区数
     private var isStartSearch = false
     private var isLocated = false      //当前是否定位成功
     private var isInDangerZone = false //当前定位位置是否在风险地区
 
-    //协程
-    private lateinit var mJob: Job
-    override val coroutineContext: CoroutineContext get() = mJob + Dispatchers.Main
+    //包含所有风险地区的列表
+    private val mPolyLineList: MutableList<List<List<LatLng>>> = ArrayList()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_map)
-        CommonUtils.requestPermission(this)
-        initView()
-        CommonUtils.startOneLocation(mLocationClient, mOneLocationListener)
-        startNetworkRequest()
+    //区域检索
+    private val mDistrictSearchList = mutableListOf<DistrictSearch>()
+    //搜索疫情风险地区的地点位置
+    private val mPoiSearch: PoiSearch by lazy {
+        PoiSearch.newInstance().apply {
+            setOnGetPoiSearchResultListener(mOnRiskAreaPoiResult)
+        }
+    }
+    //搜索自己的社区的位置
+    private val mCommunityPoiSearch : PoiSearch by lazy {
+        PoiSearch.newInstance().apply {
+            setOnGetPoiSearchResultListener(mOnCommunityPoiResult)
+        }
     }
 
-    private fun initView() {
+    private val mOnCommunityPoiResult = object: OnPoiSearchResultAdapter() {
+        override fun onGetPoiResult(result: PoiResult?) {
+            //获取列表第一个poi点，即最符合要求的点作为标记位置
+            val poiInfo = result?.allPoi?.iterator()?.next() ?: return
+            mBaiduMap.addOverlay(poiInfo.drawMarker(this@MapActivity, true, "我的社区"))
+        }
+    }
+
+    private val mOnRiskAreaPoiResult = object: OnPoiSearchResultAdapter() {
+        override fun onGetPoiResult(result: PoiResult?) {
+            //获取列表第一个poi点，即最符合要求的点作为标记位置
+            val poiInfo = result?.allPoi?.iterator()?.next() ?: return
+            mBaiduMap.addOverlay(poiInfo.drawMarker(this@MapActivity, false))
+        }
+    }
+
+    override fun contentView() = R.layout.activity_map
+
+    override fun findView() {
         mMapView = findViewById(R.id.map_view)
         mDangerAreaView = findViewById(R.id.dav_map_top)
-        mBaiduMap = mMapView.map
-        mBaiduMap.setViewPadding(30, 0, 30, 20)
     }
 
-    //单次定位回调监听
+    override fun initView() {
+        mBaiduMap = mMapView.map
+        mBaiduMap.setViewPadding(30, 0, 30, 20)
+        CommonUtils.requestPermission(this)
+        CommonUtils.startOneLocation(mLocationClient, mOneLocationListener)
+        requestRiskArea()
+        requestCommunityAddress()
+    }
+
+    //定位的回调监听
     private val mOneLocationListener: BDAbstractLocationListener = object : BDAbstractLocationListener() {
         override fun onReceiveLocation(location: BDLocation?) {
             if (null == location) return
@@ -90,8 +107,16 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
             val markerOptions = MarkerOptions()
             markerOptions.position(latLng)
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(
-                CommonUtils.drawBitmapFromVector(this@MapActivity, R.drawable.ic_baseline_location_on_24_blue)))
+                CommonUtils.drawBitmapFromVector(this@MapActivity, R.drawable.ic_location_blue)))
             markerOptions.zIndex(9)
+            val textView = TextView(this@MapActivity).apply {
+                textSize = 13f
+                text = "我的位置"
+                setTextColor(Color.WHITE)
+                setPadding(10, 5, 10, 5)
+                background = ContextCompat.getDrawable(this@MapActivity, R.drawable.bg_label_map_mark_blue)
+            }
+            markerOptions.scaleX(0.8f).scaleY(0.8f).infoWindow(InfoWindow(textView, latLng, -60))
             mOneLocMarker = mBaiduMap.addOverlay(markerOptions) as Marker
             val builder = LatLngBounds.Builder().include(latLng)
             val mapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(builder.build(), 0, 0, 0, 600)
@@ -109,8 +134,7 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
     private fun stopOneLocation() = mLocationClient.stop()
 
     //调用卫健委的接口并处理返回
-    private fun startNetworkRequest() {
-        mJob = Job()
+    private fun requestRiskArea() {
         launch {
             val result = ServiceManager.requestRiskAreaData() ?: return@launch
             mTotalAreaCount = result.data.highList.size + result.data.midList.size
@@ -130,6 +154,25 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
                 result.data.midList.forEach {
                     startSearchDistrict(it, false)
                 }
+            }
+        }
+    }
+
+    private fun requestCommunityAddress() {
+        if (mUser == null || mUser?.communityId == null) return
+        launch {
+            val result = ServiceManager.request {
+                val request = CommunityEvent.GetCommunityReq(mUser!!.communityId)
+                it.getCommunityById(request.toJsonRequest())
+            }
+            if (result == null || result.code == CommunityEvent.FAIL) return@launch
+            result.community.location.split("-").let {
+                if (it.isEmpty()) return@let
+                val option = PoiCitySearchOption()
+                    .city(it[0])
+                    .keyword(it[it.size - 1])
+                    .pageCapacity(1).cityLimit(true)
+                mCommunityPoiSearch.searchInCity(option)
             }
         }
     }
@@ -157,51 +200,24 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
         val polyLines = result.getPolylines() ?: return //绘制的多边形
         val builder = LatLngBounds.Builder()
         mPolyLineList.add(polyLines)
-        for (polyline in polyLines) {
-            val ooPolygon: OverlayOptions = PolygonOptions()
+        polyLines.forEach { polyline ->
+            val ooPolygon = PolygonOptions()
                 .points(polyline)
                 .stroke(Stroke(5, ContextCompat.getColor(this, strokeColor)))
                 .fillColor(ContextCompat.getColor(this, fillColor))
                 .zIndex(1)
+            //添加边界到地图
             mBaiduMap.addOverlay(ooPolygon)
             for (latLng in polyline) {
                 builder.include(latLng)
             }
         }
-        //检索具体疫情风险社区的位置
+        //检索具体疫情风险社区的位置（标记点）
         for (community in area.communitys) {
             val option = PoiCitySearchOption().city(area.city).keyword(community).pageCapacity(1).cityLimit(true)
             mPoiSearch.searchInCity(option)
         }
         judgementDangerZone()
-    }
-
-    //poi检索结果
-    override fun onGetPoiResult(result: PoiResult?) {
-        val poiInfos: List<PoiInfo> = result?.allPoi ?: return
-        if (poiInfos.isEmpty()) return
-        val poiInfo = poiInfos.iterator().next()
-        val markerOptions = MarkerOptions().position(poiInfo.getLocation()).icon(
-            BitmapDescriptorFactory.fromBitmap(CommonUtils.drawBitmapFromVector(
-                this@MapActivity, R.drawable.ic_baseline_location_on_24_red
-            )))
-        val textView = TextView(this)
-        textView.textSize = 12f
-        textView.text = poiInfo.getName()
-        textView.setPadding(10, 5, 10, 5)
-        textView.background = ContextCompat.getDrawable(this, R.drawable.bg_label_map_mark)
-        val infoWindow = InfoWindow(textView, poiInfo.getLocation(), -60)
-        markerOptions.scaleX(0.8f).scaleY(0.8f).infoWindow(infoWindow)
-        mBaiduMap.addOverlay(markerOptions)
-    }
-
-    override fun onGetPoiIndoorResult(result: PoiIndoorResult?) {
-    }
-
-    override fun onGetPoiDetailResult(result: PoiDetailResult?) {
-    }
-
-    override fun onGetPoiDetailResult(result: PoiDetailSearchResult?) {
     }
 
     //判断当前定位是否在中高风险地区，并更新顶部提示
@@ -233,8 +249,8 @@ class MapActivity : AppCompatActivity(), OnGetPoiSearchResultListener, Coroutine
         super.onDestroy()
         mMapView.onDestroy()
         stopOneLocation()
-        mJob.cancel()
         mPoiSearch.destroy()
+        mCommunityPoiSearch.destroy()
         mDistrictSearchList.forEach {
             it.destroy()
         }

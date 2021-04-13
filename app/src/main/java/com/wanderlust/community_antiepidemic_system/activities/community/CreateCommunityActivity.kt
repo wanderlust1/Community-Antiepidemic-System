@@ -6,7 +6,6 @@ import android.widget.Button
 import android.widget.ImageView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.gson.Gson
 import com.wanderlust.community_antiepidemic_system.R
 import com.wanderlust.community_antiepidemic_system.WanderlustApp
 import com.wanderlust.community_antiepidemic_system.activities.BaseActivity
@@ -19,15 +18,21 @@ import com.wanderlust.community_antiepidemic_system.network.ServiceManager
 import com.wanderlust.community_antiepidemic_system.utils.addErrorTextWatcher
 import com.wanderlust.community_antiepidemic_system.utils.toJsonRequest
 import com.wanderlust.community_antiepidemic_system.utils.toast
-import kotlinx.coroutines.*
-import okhttp3.RequestBody.Companion.toRequestBody
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import java.net.ConnectException
 
 class CreateCommunityActivity : BaseActivity() {
 
     companion object {
         const val TAG = "CreateCommunityActivity"
+    }
+
+    private val mAreaDialog by lazy {
+        PoiAreaDialog(this).apply {
+            setOnSelectListener {
+                mTieAddress.setText(it.address)
+            }
+        }
     }
 
     private lateinit var mTilName: TextInputLayout
@@ -59,6 +64,10 @@ class CreateCommunityActivity : BaseActivity() {
         mTiePhone.addErrorTextWatcher(mTilPhone, "社区联系方式不能为空")
         mBtnSubmit.setOnClickListener {
             onSubmit()
+        }
+        mTieAddress.isFocusable = false
+        mTieAddress.setOnClickListener {
+            mAreaDialog.show()
         }
     }
 

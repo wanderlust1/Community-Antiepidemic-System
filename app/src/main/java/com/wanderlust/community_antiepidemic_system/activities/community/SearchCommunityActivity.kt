@@ -136,17 +136,17 @@ class SearchCommunityActivity : AppCompatActivity(), CoroutineScope {
                     ServiceManager.client.joinCommunity(Gson().toJson(request).toRequestBody()).execute()
                 }
             } catch (e: ConnectException) {
-                R.string.connection_error.toast(this@SearchCommunityActivity)
+                R.string.connection_error.toast()
                 null
             } catch (e: Exception) {
                 e.printStackTrace()
-                R.string.timeout_error.toast(this@SearchCommunityActivity)
+                R.string.timeout_error.toast()
                 null
             }
             Log.d(TAG, response?.body().toString())
             if (response?.body() == null) return@launch
             val result = response.body()!!
-            result.msg.toast(this@SearchCommunityActivity)
+            result.msg.toast()
             if (result.code == CommunityEvent.SUCC) {
                 mUser?.communityId = newId
                 mUser?.communityName = newName

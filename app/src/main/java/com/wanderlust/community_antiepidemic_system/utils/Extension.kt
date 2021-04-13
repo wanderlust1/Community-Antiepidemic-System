@@ -2,11 +2,18 @@ package com.wanderlust.community_antiepidemic_system.utils
 
 import android.content.Context
 import android.content.SyncStatusObserver
+import android.graphics.Color
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import com.baidu.mapapi.map.BitmapDescriptorFactory
+import com.baidu.mapapi.map.InfoWindow
+import com.baidu.mapapi.map.MarkerOptions
+import com.baidu.mapapi.search.core.PoiInfo
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
@@ -40,6 +47,25 @@ fun Int.toast(context: Context? = WanderlustApp.context) {
 
 fun Any.toJsonRequest(): RequestBody {
     return Gson().toJson(this).toRequestBody()
+}
+
+fun PoiInfo.drawMarker(context: Context, isSelf: Boolean, text: String? = null): MarkerOptions {
+    //绘制图标
+    val icon = CommonUtils.drawBitmapFromVector(context,
+        if (isSelf) R.drawable.ic_location_blue else R.drawable.ic_location_red)
+    val markerOptions = MarkerOptions()
+        .position(getLocation())
+        .icon(BitmapDescriptorFactory.fromBitmap(icon))
+    //标记点上的label，显示名称
+    val textView = TextView(context).apply {
+        this.textSize = if (isSelf) 13f else 12f
+        this.text = text ?: getName()
+        setTextColor(if (isSelf) Color.WHITE else Color.BLACK)
+        setPadding(10, 5, 10, 5)
+        background = ContextCompat.getDrawable(context,
+            if (isSelf) R.drawable.bg_label_map_mark_blue else R.drawable.bg_label_map_mark)
+    }
+    return markerOptions.scaleX(0.8f).scaleY(0.8f).infoWindow(InfoWindow(textView, getLocation(), -60))
 }
 
 fun TextInputEditText.addErrorTextWatcher(parent: TextInputLayout, errorText: String) {

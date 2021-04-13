@@ -99,4 +99,8 @@ interface ApiService {
     @POST("getCommunityMessage")
     fun getCommunityMessage(@Body body: RequestBody): Call<CommunityEvent.CommunityMessageRsp>
 
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("getCommunityById")
+    fun getCommunityById(@Body body: RequestBody): Call<CommunityEvent.GetCommunityRsp>
+
 }
